@@ -1,0 +1,119 @@
+.qd-container {
+    padding: 5rem 0rem;
+    background: rgba(255, 255, 255, 1);
+    background: -moz-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(214, 236, 245, 1) 57%, rgba(183, 222, 237, 1) 100%);
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(57%, rgba(214, 236, 245, 1)), color-stop(100%, rgba(183, 222, 237, 1)));
+    background: -webkit-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(214, 236, 245, 1) 57%, rgba(183, 222, 237, 1) 100%);
+    background: -o-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(214, 236, 245, 1) 57%, rgba(183, 222, 237, 1) 100%);
+    background: -ms-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(214, 236, 245, 1) 57%, rgba(183, 222, 237, 1) 100%);
+    background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(214, 236, 245, 1) 57%, rgba(183, 222, 237, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#b7deed', GradientType=1);
+    width: 100%;
+    height: 100%;
+}
+
+.title {
+    padding-bottom: 4rem;
+}
+
+.sub-title {
+    padding-bottom: 2rem;
+}
+
+.qd-container h1 {
+    text-align: center;
+}
+
+.qd-container h2 {
+    text-align: center;
+}
+
+.qd-3-grid h3 {
+    text-align: center;
+}
+
+.qd-3-grid {
+    max-width: 900px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 2rem;
+}
+
+.qd-3-grid div {
+    background-color: var(--primary-color);
+    border: solid medium black;
+    border-radius: 10px;
+    color: rgb(243, 243, 243);
+}
+
+.qd-3-grid div h3 {
+    letter-spacing: .2rem;
+}
+
+.control-buttons {
+    padding-top: 2rem;
+}
+
+.select {
+    margin: 0;
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: thin solid white;
+    cursor: pointer;
+}
+
+.select:hover {
+    margin: 0;
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: thin solid white;
+    cursor: pointer;
+    background-color: rgb(192, 113, 22);
+    border-radius: 0px 0px 10px 10px;
+}
+
+.selected {
+    background-color: rgb(192, 113, 22);
+    margin: 0;
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: thin solid white;
+    cursor: pointer;
+    background-color: rgb(192, 113, 22);
+    border-radius: 0px 0px 10px 10px;
+}
+
+.form {
+    margin: auto;
+    max-width: 1000px;
+}
+
+.form-group {
+    margin: 2rem 0rem;
+}
+
+.checkout-page {
+    margin: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2rem;
+}
+
+.checkout-invoice {
+    background-color: white;
+    border-radius: 10px;
+    padding: 0 2rem;
+}
+
+.checkout-invoice p {
+    padding: 0rem;
+    line-height: 1rem;
+}
+
+.grid-segment-3 {
+
+}

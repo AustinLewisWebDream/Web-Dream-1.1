@@ -1,0 +1,46 @@
+.error {
+    color: rgb(255, 57, 57);
+    background-color: rgb(255, 173, 173);
+    border-radius: 10px;
+}
+
+.warning {
+    color: black;
+    background-color: lightyellow;
+}
+
+.normal {
+    color: grey;
+    background-color: lightblue; 
+}
+
+.success {
+    color: green;
+    background-color: lightgreen; 
+}
+
+.message p {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    padding-left: .5rem;
+    padding-right: .5rem;
+}
+
+.message div :nth-child(1) {
+    padding-top: .5rem;
+}
+
+.message div :last-child {
+    padding-bottom: .5rem;
+}
+
+.center-message {
+    margin: 0 auto;
+}
+
+.message {
+    max-width: 600px;
+    margin: auto;
+}
+

@@ -1,0 +1,16 @@
+.header {
+    color: var(--header-text-color);
+    text-align: center;
+    padding-top: 8rem;
+    padding-bottom: 5rem;
+    background-image: url('/images/header.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.header h1 {
+    color: var(--header-text-color);
+}
+
+

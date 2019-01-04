@@ -1,0 +1,6 @@
+
+export const GET_ERRORS = 'GET_ERRORS';
+export const SET_CURRENT_USER = 'SET_CURRENT_USER';
+export const UPDATE_USER = 'UPDATE_USER';
+export const SET_LOGIN_POPUP = 'SET_LOGIN_POPUP';
+export const SET_REGISTER_POPUP = 'SET_REGISTER_POPUP';

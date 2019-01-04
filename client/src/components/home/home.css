@@ -1,0 +1,76 @@
+.head-grid {
+    padding-bottom: 18rem;
+    background-image: url('/images/header.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    padding-top: 20rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2rem;
+    justify-self: center;
+}
+
+.header-text-block {
+    padding-left: 8rem;
+    font-size: 1.2rem;
+}
+
+
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10rem;
+    padding: 2rem 10rem 2rem 10rem;
+}
+
+.info-grid img {
+    max-width: 500px;
+}
+
+.circle-img {
+    border-radius: 500px;
+    -webkit-box-shadow: 3px 4px 29px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 3px 4px 29px 0px rgba(0,0,0,0.75);
+    box-shadow: 3px 4px 29px 0px rgba(0,0,0,0.75);  
+}
+
+.center-stuff {
+    align-self: center;
+    justify-self: center;
+}
+
+.smaller-img {
+    height: 400px;
+}
+
+.graph {
+    height: 400px;
+}
+
+.alt-background {
+    background-color: rgb(237, 248, 252);
+}
+
+.review {
+    text-align: center;
+}
+
+.review img {
+    height: 25px;
+}
+
+.review p {
+    font-size: .95rem;
+    font-style: italic;
+}
+
+.name {
+    font-weight: bold;
+    font-style: normal;
+}
+
+.computer-icon {
+    height: 150px;
+}

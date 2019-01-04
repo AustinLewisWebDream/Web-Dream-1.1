@@ -1,0 +1,30 @@
+.bg-modal {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    width: 500px;
+    height: 600px;
+    background-color: white;
+    border-radius: 10px;
+    position: relative;
+}
+
+.close-button {
+    color: darkgrey;
+    font-size: 4rem;
+    transform: rotate(45deg);
+    cursor: pointer;
+    position: absolute;
+    margin-top: 1rem;
+    padding: 0;
+    right: 1rem;
+}

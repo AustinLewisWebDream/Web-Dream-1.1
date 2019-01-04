@@ -1,0 +1,41 @@
+.popup-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 6rem;
+}
+
+.popup-form input {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    border-bottom: solid grey thick;
+    color: black;
+    background-color: transparent;
+    padding: .3rem;
+    display: block;
+    font-size: 1.6rem;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid lightgrey;
+    width: 100%;
+}
+
+.popup-form button {
+    width: 100%;
+}
+
+.sub-button-text {
+    padding-top: 1rem;
+    text-align: right;
+}
+
+.sub-button-text p {
+    color: rgb(167, 167, 167);
+    border-bottom: dotted medium lightgrey;
+    
+}
+
+.sub-button-text p:hover {
+    cursor: pointer;
+    color: rgb(0, 119, 255);
+}

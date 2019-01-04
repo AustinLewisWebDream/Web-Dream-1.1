@@ -1,0 +1,302 @@
+:root {
+  --primary-color: #3066be;
+  --secondary-color: lightblue;
+  --primary-text-l : lightgrey;
+  --secondary-text: rgb(51, 51, 51);
+  --header-text-color: rgb(231, 231, 231);
+}
+
+body {
+  line-height: 1.6rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body h1 {
+  font-size: 3rem;
+  color: rgb(88, 88, 88);
+  line-height: 4rem;
+}
+
+.header-text {
+  text-align: center;
+  color: rgb(231, 231, 231);
+}
+
+/* Input Styles */
+.head-input {
+  color: rgb(212, 212, 212);
+  background-color: transparent;
+  padding: .3rem;
+  display: block;
+  font-size: 1.6rem;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid white;
+}
+
+input:focus {
+
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+
+
+/* Text colors */
+.primary-dark-bg {
+  color: rgb(214, 214, 214);
+}
+
+.secondary-dark-bg {
+  color: rgb(199, 199, 199);
+}
+
+
+.center-grid-item {
+  justify-self: center;
+  align-self: center;
+}
+
+.right-grid-item {
+  justify-self: right;
+  align-self: right;
+}
+
+.center {
+  text-align: center;
+}
+
+.center-div {
+  margin: auto;
+}
+
+
+/* Font awesome icons */
+.large {
+  width: 50px;
+  height: auto;
+}
+
+
+button {
+  letter-spacing: .1rem;
+  -webkit-box-shadow: 3px 9px 30px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 3px 9px 30px 0px rgba(0,0,0,0.75);
+  box-shadow: 3px 9px 30px -5px rgba(0,0,0,0.75);
+}
+
+/* Button Styles */
+.block-btn {
+  letter-spacing: .1rem;
+  display: block;
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 1.5rem;
+  color: rgb(233, 233, 233);
+  padding: .5rem;
+  border-radius: 50px;
+  background-color: rgb(38, 136, 248);
+}
+
+.block-btn:hover {
+  cursor: pointer;
+  background-color: rgb(66, 153, 252);
+}
+
+.block-btn:active {
+  transition: transform .1s;
+  transform: translateY(1px);
+}
+
+.sub-btn {
+  display: block;
+  border: none;
+  outline: none;
+  font-size: 1.1rem;
+  color: white;
+  padding: .5rem 1.5rem .5rem 1.5rem;
+  border-radius: 50px;
+  background-color: var(--primary-color);
+}
+
+.sub-btn:hover {
+  cursor: pointer;
+  background-color: rgb(72, 118, 247);
+}
+
+.sub-btn:active {
+  transition: transform .1s;
+  transform: translateY(1px);
+}
+
+
+.lg-btn {
+  display: block;
+  border: none;
+  outline: none;
+  font-size: 1.4rem;
+  color: white;
+  padding: .6rem 1.9rem .6rem 1.9rem;
+  border-radius: 50px;
+  background-color: rgb(38, 136, 248);
+}
+
+.lg-btn:hover {
+  cursor: pointer;
+  background-color: rgb(66, 153, 252);
+}
+
+.lg-btn:active {
+  transition: transform .1s;
+  transform: translateY(1px);
+}
+
+.pop-up-container {
+  margin: auto;
+}
+
+.pop-up {
+  position: fixed;
+  max-height: 500px;
+  max-width: 500px;
+  background-color: white;
+}
+/* Sale Banner Styling */
+
+.sale-banner-link * {
+  text-decoration: none;
+}
+
+.sale-banner {
+  margin-bottom: 1rem;
+  width: 100%;
+  text-align: center;
+  background-color: rgb(59, 126, 189);
+  color: rgb(240, 240, 240);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  font-size: 1.3rem;
+}
+.help-banner {
+  width: 100%;
+  text-align: center;
+  background-color: rgb(59, 126, 189);
+  color: rgb(240, 240, 240);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.sale-banner h2 {
+  color: rgb(240, 240, 240);
+  letter-spacing: 1rem;
+}
+
+.sale-banner-grid {
+  margin: auto;
+  text-align: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2rem;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+}
+
+
+.page-section {
+  background-color: rgb(230, 230, 230);
+  padding: 1rem 0; 
+}
+
+
+/* Grids */
+.reg-two-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2rem;
+}
+
+
+.res-two-grid {
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2rem;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+}
+
+
+.res-three-grid {
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 2rem;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+}
+
+.res-five-grid {
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-gap: 2rem;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+}
+
+
+.no-link {
+  text-decoration: none;
+}
+
+.tech-icon {
+  margin: auto;
+  text-align: center;
+  height: 100px;
+  width: auto;
+}
+
+.section {
+  padding: 2rem;
+  background-color: rgb(165, 225, 245);
+}
+
+.center-div {
+  margin: auto;
+  display: inline-block;
+}
+
+.wd-list {
+  list-style-image: url('/images/icons/cloud.png');
+  line-height: 2rem;
+  text-align: left;
+}
+
+
+/* Text Status */
+.good {
+  color: green;
+  background-color: rgba(0, 255, 0, .1);
+  border-radius: 5px;
+  padding: .5rem
+}
+
+.bad {
+  color: red;
+  background-color: rgba(255, 0, 0, .1);
+  border-radius: 5px;
+  padding: .5rem
+}
+
+.no-link-style {
+  color: inherit;
+  text-decoration: none;
+}

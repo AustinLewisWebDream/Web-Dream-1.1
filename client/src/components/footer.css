@@ -1,0 +1,47 @@
+#footer {
+    background-color: rgb(45, 74, 155);
+    color: var(--primary-text-l);
+    list-style: none;
+    color: rgb(224, 224, 224);
+    padding: .5rem 3rem 2rem 3rem;
+    line-height: 2rem;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 4rem;
+    margin: 2rem 3rem 2rem 3rem;
+
+}
+
+.test {
+    list-style-type: none;
+}
+
+#footer li {
+    list-style-type: none;
+}
+
+.logo {
+    height: 100px;
+    width: auto;
+}
+
+.icon-grid {
+    padding-top: 3rem;
+    margin: auto;
+    max-width: 20%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.icon-grid img {
+    width: 40px;
+    height: auto;
+}
+
+#copywrite {
+    text-align: center;
+    font-size: .7rem;
+}

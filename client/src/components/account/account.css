@@ -1,0 +1,112 @@
+.account-container {
+    margin: 0 2rem;
+    padding: 5rem;
+}
+
+.jumbotron {
+    text-align: center;
+    border-radius: 5px;
+    background-color: lightgrey;
+}
+
+.segment {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+    margin: 1.5rem 0;
+    border-radius: 5px;
+    border: medium grey dashed;
+    grid-gap: 3rem;
+}
+
+.account-nav-block {
+    font-size: 1.3rem;
+}
+
+.account-nav-block p {
+    margin: .5rem;
+}
+
+.account-nav-block.active {
+    border-bottom: 4px solid var(--primary-color);
+}
+
+.account-two-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+}
+
+.method-segment {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+    margin: 1rem 0;
+    border-radius: 40px;
+    border: thin black solid;
+    background-color: rgb(255, 255, 255);
+}
+
+.monthly-rate {
+    font-size: 1.2rem;
+}
+
+.delete-icon {
+    background-color: rgb(255, 88, 88);
+    border-radius: 50px;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.segment .standard {
+    padding: .5rem;
+}
+
+.primary-method {
+    color: green;
+    background-color: rgba(0, 255, 0, .1);
+    border-radius: 5px;
+    padding: 0 1rem;
+}
+
+.account-navigation {
+    max-width: 700px;
+    margin-top: 4rem;
+    margin-bottom: 3rem;
+}
+
+.account-nav-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 0;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+}
+
+.monthly-rate-container {
+    font-size: 1.2rem;
+    letter-spacing: .1rem;
+    max-width: 500px;
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    padding: 4rem .1rem;
+}
+
+.account-hosting-grid {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 2rem;
+}
+
+.subscriptions-container h3 {
+    margin-top: 0;
+}
