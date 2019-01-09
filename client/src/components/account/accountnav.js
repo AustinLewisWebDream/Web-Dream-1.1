@@ -11,7 +11,6 @@ const AccountNavigation = withRouter(props => <Nav {...props} />)
 
 class Nav extends Component {
     render() {
-
     const currentTab = this.props.location.pathname;
 
     var hostingClass  = 'account-nav-block'
@@ -36,11 +35,11 @@ class Nav extends Component {
                         <NavLink className='no-link-style' to='/account/quotes'><p>Quotes</p></NavLink>
                     </div>
                     <div className={settingsClass}>
-                        <NavLink className='no-link-style' to='/account'><p>Settings</p></NavLink>
+                        <NavLink className='no-link-style' to='/account'><p>Account</p></NavLink>
                     </div>
                 </div>
             </div>
-            <Route path={'/account/quote'} component={ QuotesPage } />
+            <Route path={'/account/quotes'} component={ QuotesPage } />
             <Route path={'/account/hosting'} component={ HostingPage } />
             <Route exact path={'/account'} component={ SettingsPage } />
             </React.Fragment>

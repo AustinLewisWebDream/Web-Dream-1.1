@@ -110,3 +110,9 @@
 .subscriptions-container h3 {
     margin-top: 0;
 }
+
+.quote-container {
+    border: solid black thick;
+    margin: 2rem 0;
+    padding: 1.5rem;
+}

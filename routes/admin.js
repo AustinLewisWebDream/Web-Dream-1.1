@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 
 var User = mongoose.model('users');
 var Sub = require('../db/models/subscriptions')
+const nodeJobs = require('../lib/NodeCron');
+
 
 router.post('/subscription/create', (req, res) => {
     console.log('Subscription About to be added')
@@ -21,5 +23,11 @@ router.post('/subscription/create', (req, res) => {
         console.log(err)
     })
 });
+
+router.post('/scheduleJob', (req, res) => {
+    nodeJobs.scheduleNewJob();
+    console.log('Job was scheduled');
+    res.sendStatus(200);
+})
 
 module.exports = router;

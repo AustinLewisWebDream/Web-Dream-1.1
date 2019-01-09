@@ -24,7 +24,8 @@ const UserSchema = new Schema({
     subscriptions: [],
     paymentMethods: [],
     invoices: [],
-    autoRenew: Boolean
+    autoRenew: Boolean,
+    paymentHistory: []
 });
 
 const User = mongoose.model('users', UserSchema);

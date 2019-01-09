@@ -1,13 +1,22 @@
 import React, {Component} from 'react';
 import redux from 'redux';
-import connect from 'react-redux';
+import { connect } from 'react-redux';
+import QuotesList from './list';
 
 class QuotesPage extends Component {
     render() {
         return(
-            <h1>This is the quotes page</h1>
+            <React.Fragment>
+                <QuotesList quotes={this.props.quotes} />
+            </React.Fragment>
         )
     }
 }
 
-export default QuotesPage
+const mapStateToProps = (state) => {
+    return {
+        quotes: state.auth.user.quotes
+    }
+}
+
+export default connect(mapStateToProps)(QuotesPage)

@@ -41,8 +41,6 @@ router.post('/payment-method/add', middleware.verify, async (req, res) => {
 
 router.post('/payment-method/remove', middleware.verify, async (req, res) => {
     try {
-        console.log(req.body)
-
         var user = await User.findById(req.body.id)
 
         const stripeCardToken = await stripeFunctions.getCardTokenFromNumber(user.paymentMethods, req.body.number)
@@ -68,22 +66,19 @@ router.post('/payment-method/remove', middleware.verify, async (req, res) => {
 });
 
 router.post('/subscription/add', middleware.verify, async (req, res) => {
-    console.log('Route hit')
     try {
         const user = await User.findById(req.body.id);
         const subscription = await subscriptionFunctions.getSubscription(req.body.type, req.body.name);
         const updatedSubscriptions = await userFunctions.pushSubscriptionToAccount(user, subscription);
         const updatedMonthlyRate = await userFunctions.getMonthlyRate(user);
-        const updatedInvoices = await userFunctions.pushInvoiceToAccount(user, {name: subscription.name, price: subscription.monthly});
         const stripePayment = await stripeFunctions.processStripePayment(user.stripeData.id, subscription.monthly);
+        // TODO: Generate Receipt
 
-        user.invoices = updatedInvoices;
         user.subscriptions = updatedSubscriptions;
         user.monthlyRate = updatedMonthlyRate;
 
         const savedUser = await user.save();
         const payload = await promises.stripUserForResolve(savedUser);
-        console.log(payload)
         res.json(payload);
     } catch (error) {
         console.log(error)
