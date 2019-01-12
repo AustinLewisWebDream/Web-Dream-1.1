@@ -21,7 +21,9 @@ const QuotesList = props => {
         )
     }
     else {
-        return null
+        return (
+            <h3>No hosting plans.</h3>
+        )
     }
 }
 

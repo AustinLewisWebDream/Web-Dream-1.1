@@ -19,12 +19,15 @@ const UserSchema = new Schema({
         type: Number,
         default: 0
     },
+    autoRenew : {
+        type: Boolean,
+        default: true,
+    },
     stripeData: {},
     quotes: [],
     subscriptions: [],
     paymentMethods: [],
     invoices: [],
-    autoRenew: Boolean,
     paymentHistory: []
 });
 

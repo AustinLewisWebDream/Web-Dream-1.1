@@ -16,12 +16,12 @@ class HostingPlans extends Component {
                 return(
                     <React.Fragment>
                         <div>
-                            
                             <div className='segment'>
                                 <p className='standard'>{subscription.subscription.name}</p>
                                 <p className='standard'>${subscription.subscription.monthly}</p>
                                 <p className='good'>Online</p>
                                 <p className='standard'>{date}th</p>
+                                <p className='manage-hosting-link'>Manage<img src='/images/icons/carrot-down.png' alt='Open Manage Menu Button' className='dropdown-carrot' /></p>
                             </div>
                         </div>
                     </React.Fragment>

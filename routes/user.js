@@ -19,7 +19,6 @@ router.post('/register', async (req, res) => {
 
     const newUser = new User({
         email: req.body.email,
-        autoRenew: false,
         password: req.body.password,
     });
 
