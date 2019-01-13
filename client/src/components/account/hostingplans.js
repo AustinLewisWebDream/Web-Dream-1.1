@@ -32,7 +32,7 @@ class HostingPlans extends Component {
         if(hostingPlans.length === 0) {
             return (
                 <React.Fragment>
-                    <h4>You have no hosting plans!</h4>
+                    <h2>No hosting plans yet</h2>
                     <button class='sub-btn'><NavLink className='no-link-style' to='/get-hosting'>Add Hosting Plan</NavLink></button>
                 </React.Fragment>
             )

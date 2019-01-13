@@ -8,9 +8,11 @@ import AutoRenew from '../autorenew';
 const Settings = () => {
     return (
         <React.Fragment>
-            <AutoRenew />
-            <PaymentMethods />
-            <CardForm />
+            <div>
+                <AutoRenew />
+                <PaymentMethods />
+                <CardForm />
+            </div>
         </React.Fragment>
     )
 }

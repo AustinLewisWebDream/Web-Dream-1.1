@@ -1,29 +1,56 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
+import Switch from '@material-ui/core/Switch';
+
+import { UPDATE_AUTORENEW } from '../../routes';
 
 class AutoRenew extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            autoRenew: this.props.on
+            autoRenew: this.props.autoRenew
         }
         this.saveAutoRenew = this.saveAutoRenew.bind(this)
     }
     render() {
+        var autoRenewText = '';
+
+        if(this.state.autoRenew) 
+            autoRenewText = 'On'
+        else 
+            autoRenewText = 'Off'
+
+
+        var autoRenewClass = ''
+
+        if(autoRenewText =='On')
+            autoRenewClass = 'good'
+        if(autoRenewText == 'Off')
+            autoRenewClass = 'bad'
+
         return (
             <React.Fragment>
-            <FormControlLabel
-            control={
-                <Checkbox
-                checked={this.state.autoRenew}
-                onChange={e => this.handleInput('autoRenew', e)}
-                value='autoRenew'
-                /> 
-            }
-            label='Auto Renew'
-            />
-            <button className='sub-btn' onClick={this.saveAutoRenew}>Save</button>
+                <div className='auto-renew-box'>
+                    <div>
+                        <h3 className='auto-renew-indicator-text'>Auto Renewal: <span className={autoRenewClass}>{autoRenewText}</span></h3>
+                    </div>
+                    <div>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                checked={this.state.autoRenew}
+                                onChange={e => this.handleInput('autoRenew', e)}
+                                value="autoRenew"
+                                color="primary"
+                                />
+                            }
+                            label="Auto Renew"
+                        />
+                        <button className='sub-btn' onClick={this.saveAutoRenew}>Save</button>
+                    </div>
+                </div>
             </React.Fragment>
 
         )
@@ -34,11 +61,13 @@ class AutoRenew extends Component {
         })
     }
     saveAutoRenew() {
-        fetch('http://localhost:5000/api/users/auto-renew', {
+        console.log(this.state.autoRenew)
+        fetch(UPDATE_AUTORENEW, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('jwtToken')
             },
             body: JSON.stringify({
                 id: this.props.userID,
@@ -48,4 +77,10 @@ class AutoRenew extends Component {
     }
 }
 
-export default AutoRenew
+const mapStateToProps = (state) => {
+    return {
+        autoRenew: state.auth.user.autoRenew
+    }
+}
+
+export default connect(mapStateToProps)(AutoRenew)

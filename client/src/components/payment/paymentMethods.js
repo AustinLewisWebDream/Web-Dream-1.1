@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { updateCurrentUser } from '../../actions/authentication';
 import { REMOVE_PAYMENT_METHOD } from '../../routes';
 
+import isEmpty from '../../validation/is-empty';
+
 class PaymentMethods extends Component {
     constructor(props) {
         super(props);
@@ -11,8 +13,7 @@ class PaymentMethods extends Component {
         }
     }
     render() {
-        console.log(this.props);
-        if(this.props.paymentMethods)
+        if(!isEmpty(this.props.paymentMethods))
         {
             return (
                 this.props.paymentMethods.map(method => {
@@ -35,7 +36,7 @@ class PaymentMethods extends Component {
         }
         else {
             return (
-                <h3>No payment methods, please add a payment method</h3>
+                <p>No payment methods yet</p>
             )
         }
     }

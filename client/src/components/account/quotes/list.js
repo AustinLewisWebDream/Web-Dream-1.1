@@ -1,7 +1,22 @@
-import React from 'react'
+import React from 'react';
+import { connect } from 'react-redux';
+import { NavLink } from 'react-router-dom';
+import isEmpty from '../../../validation/is-empty'
+;
 
 const QuotesList = props => {
-    if(props.quotes) {
+    if(isEmpty(props.quotes)) {
+        return (
+            <React.Fragment>
+                <div>
+                    <h2>No Quotes Yet</h2>
+                    <button class='sub-btn'><NavLink className='no-link-style' to='/quote'>Get Started</NavLink></button>
+                </div>
+
+            </React.Fragment>
+        )
+    }
+    else {
         return (
             props.quotes.map( quote => {
                 return (
@@ -20,11 +35,12 @@ const QuotesList = props => {
             })
         )
     }
-    else {
-        return (
-            <h3>No hosting plans.</h3>
-        )
+}
+
+const mapStateToProps = (state) => {
+    return {
+        quotes: state.auth.user.quotes
     }
 }
 
-export default QuotesList
+export default connect( mapStateToProps )( QuotesList )

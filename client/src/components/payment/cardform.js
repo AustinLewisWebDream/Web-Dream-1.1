@@ -8,7 +8,7 @@ import setAuthToken from '../../setAuthToken';
 
 import { ADD_PAYMENT_METHOD, TEST_HEADER_AUTH } from '../../routes';
 import { updateCurrentUser } from '../../actions/authentication';
-
+import { isValidCardCharacter, isValidCardLength, isBackspaceKey, isValidCVCLength, isValidExpLength } from '../../validation/paymentform';
 
 import './payment.css'
 
@@ -26,25 +26,21 @@ class CardForm extends Component{
         this.updateForm = this.updateForm.bind(this);
     }
     render() {
-        var formattedCardNumber = this.state.cardNumber;
-        if(formattedCardNumber.length % 5 === 0) {
-            formattedCardNumber += ' ';
-        }
         return(
             <React.Fragment>
                 <div className='card-form'>
                 <TextField
                     label='Card Number'
-                    onChange={this.updateCardNumber}
+                    onKeyDown={this.updateCardNumber}
                     className={classes.textField}
-                    value={formattedCardNumber}
+                    value={this.state.cardNumber}
                     margin={"normal"}
                     fullWidth={true}
                 ></TextField>
                 
                 <TextField
-                    label='Exp.'
-                    onChange={e => this.updateForm('exp', e)}
+                    label='Exp. MMYY'
+                    onKeyDown={e => this.updateForm('exp', e)}
                     className={classes.textField}
                     value={this.state.exp}
                     margin={"normal"}
@@ -52,7 +48,7 @@ class CardForm extends Component{
                 
                 <TextField
                     label='CVC'
-                    onChange={e => this.updateForm('cvc', e)}
+                    onKeyDown={e => this.updateForm('cvc', e)}
                     className={classes.textField}
                     value={this.state.cvc}
                     margin={"normal"}
@@ -73,41 +69,51 @@ class CardForm extends Component{
             </React.Fragment>
         )
     }
+
     updatePrimary(name, e) { this.setState({ [name]: e.target.checked })}
 
-    updateForm(name, e) { this.setState({ [name]: e.target.value })}
+    updateForm(name, e) { 
+        if(isBackspaceKey(e.keyCode)) {
+            const newString = e.target.value.substring(0, e.target.value.length - 1)
+            this.setState({
+                [name]: newString
+            })
+            return;
+        }
+        if(name === 'cvc') {
+            if(!isValidCVCLength(e.target.value))
+                return;
+        } else {
+            if(!isValidExpLength(e.target.value))
+                return;
+        }
+        if(!isValidCardCharacter(e.key)){
+            return
+        }
+        this.setState({ [name]: e.target.value+e.key })
+    }
+
+    
 
     updateCardNumber(e) {
         var input = e.target.value;
-        if(('0123456789'.indexOf(input[input.length - 1]) !== -1) && input.length < 21) {
-            this.setState({ cardNumber: input })
-        }
-        else 
-            return;
-    }
+        var cardLength = this.state.cardNumber+e.key
+        cardLength = this.state.cardNumber.replace(/\s/g, '')
 
-    async testAuth() {
-        setAuthToken();
-        // For testing purposes only ----------------
-        const response = await fetch(TEST_HEADER_AUTH, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('jwtToken')
-            },
-            body: JSON.stringify({
-                id: this.props.userID,
+        if(isBackspaceKey(e.keyCode)) {
+            const newString = cardLength.substring(0, input.length - 1)
+            this.setState({
+                cardNumber: newString
             })
-            })
-        
-        response.json().then(user => {
-            this.props.updateCurrentUser(user)
-        })
-        // end testing -----------------------
+            return;
+        }
+
+        if(isValidCardCharacter(e.key) && isValidCardLength(cardLength)) {
+            this.setState({ cardNumber: input+e.key })
+        } else {
+            
+        }
     }
-    
-    
 
     async submitPaymentInfo() {
         try {

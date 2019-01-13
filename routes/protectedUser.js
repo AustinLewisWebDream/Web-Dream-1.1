@@ -88,7 +88,7 @@ router.post('/subscription/add', middleware.verify, async (req, res) => {
 
 router.post('/auto-renew', middleware.verify, async (req, res) => {
     try {
-        const user = await User.findByIdAndUpdate(req.body.id, {autoRenew: req.body.autoRenew}, {new : true});
+        const user = await User.findOneAndUpdate({id: req.body.id}, {autoRenew: req.body.autoRenew});
         const payload = promises.stripUserForResolve(user);
         res.json(payload);
     } catch (error) {

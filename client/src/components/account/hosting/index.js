@@ -6,19 +6,28 @@ import MonthlyRate from '../monthlyrate';
 
 class HostingPage extends Component {
     render() {
-        return (
-            <React.Fragment>
-                <div className='account-hosting-grid'>
-                    <div>
-                        <MonthlyRate rate={this.props.rate} />
+        if(this.props.rate) {
+            return (
+                <React.Fragment>
+                    <div className='account-hosting-grid'>
+                        <div>
+                            <MonthlyRate rate={this.props.rate} />
+                        </div>
+                        <div>
+                            <HostingPlans />
+                        </div>
                     </div>
-                    <div>
-                        <HostingPlans />
-                    </div>
+     
+                </React.Fragment>
+            )
+        }
+        else {
+            return (
+                <div>
+                    <HostingPlans />
                 </div>
- 
-            </React.Fragment>
-        )
+            )
+        }
     }
 }
 

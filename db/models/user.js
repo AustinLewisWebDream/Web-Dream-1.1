@@ -23,6 +23,10 @@ const UserSchema = new Schema({
         type: Boolean,
         default: true,
     },
+    status: {
+        type: String,
+        default: 'normal'
+    },
     stripeData: {},
     quotes: [],
     subscriptions: [],
