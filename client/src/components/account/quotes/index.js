@@ -7,7 +7,9 @@ class QuotesPage extends Component {
     render() {
         return(
             <React.Fragment>
-                <QuotesList quotes={this.props.quotes} />
+                <div>
+                    <QuotesList quotes={this.props.quotes} />
+                </div>
             </React.Fragment>
         )
     }

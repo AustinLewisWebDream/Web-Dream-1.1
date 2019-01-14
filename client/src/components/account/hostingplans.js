@@ -12,7 +12,7 @@ class HostingPlans extends Component {
         var hostingPlans = null
         if(this.props.subscriptions) {
             hostingPlans = this.props.subscriptions.map(subscription => {
-                const date = subscription.renewDate.substr(8, 2)
+                const date = subscription.renewDate.substring(8,10)
                 return(
                     <React.Fragment>
                         <div>
@@ -21,7 +21,8 @@ class HostingPlans extends Component {
                                 <p className='standard'>${subscription.subscription.monthly}</p>
                                 <p className='good'>Online</p>
                                 <p className='standard'>{date}th</p>
-                                <p className='manage-hosting-link'>Manage<img src='/images/icons/carrot-down.png' alt='Open Manage Menu Button' className='dropdown-carrot' /></p>
+                                {/* <p onClick={e => this.manageHosting(subscription.subscription.name, subscription.renewDate)} className='standard manage-hosting-link'>Manage<img src='/images/icons/carrot-down.png' alt='Open Manage Menu Button' className='dropdown-carrot' /></p> */}
+
                             </div>
                         </div>
                     </React.Fragment>
@@ -49,6 +50,9 @@ class HostingPlans extends Component {
             )
         }
 
+    }
+    manageHosting(name, renewDate) {
+        console.log(name, renewDate)
     }
 }
 

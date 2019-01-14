@@ -33,6 +33,7 @@ function stripUserForResolve(user) {
   
   const strippedUser = {
     id: user.id,
+    email: user.email,
     subscriptions: user.subscriptions,
     paymentMethods: strippedMethods,
     quotes: user.quotes,

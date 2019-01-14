@@ -58,13 +58,13 @@
 
 .method-segment {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns:1fr 1fr 1fr 1fr;
     align-content: center;
     justify-content: center;
     justify-items: center;
     margin: 1rem 0;
-    border-radius: 40px;
-    border: thin black solid;
+    border-radius: 10px;
+    border: medium grey dashed;
     background-color: rgb(255, 255, 255);
 }
 
@@ -73,8 +73,6 @@
 }
 
 .delete-icon {
-    background-color: rgb(255, 88, 88);
-    border-radius: 50px;
     padding: 1rem;
     cursor: pointer;
 }
@@ -125,9 +123,26 @@
 }
 
 .quote-container {
-    border: solid black thick;
-    margin: 2rem 0;
-    padding: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1rem 2rem;
+    border: dashed grey medium;
+    border-radius: 10px;
+
+}
+
+.quote-name {
+    text-align: center;
+}
+
+.quote-segment p {
+    border-radius: 10px;
+    background-color: rgb(235, 235, 235);
+    padding: 1rem;
+}
+
+.quote-container-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 .manage-hosting-link {
@@ -153,8 +168,37 @@
     border-radius: 10px;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    margin-bottom: 1rem;
 }
 
 .auto-renew-indicator-text {
     font-size: 2rem;
+}
+
+.update-account-info-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: rgb(235, 235, 235);
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    grid-gap: 1rem;
+}
+
+.update-account-info-block h3 {
+    font-size: 2rem;
+}
+
+.account-segment {
+    background-color: rgb(235, 235, 235);
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+.account-segment h3 {
+    font-size: 2rem;
+}
+
+.quote-container p {
+    font-size: 1.2rem;
 }

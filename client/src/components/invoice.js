@@ -2,18 +2,8 @@ import React, { Component } from 'react';
 
 class Invoice extends Component {
     render() {
-        const price = () => {
-            var total = 0; 
-            for(var i = 0; i < this.props.items.length; i++) {
-                total += this.props.items[i].price;
-            }
-            return (
-                <React.Fragment>
-                    {total}
-                </React.Fragment>
-            )
-        }
 
+        const total = getTotal(this.props.items);
 
         const items = this.props.items.map((item) => 
             <React.Fragment>
@@ -31,12 +21,20 @@ class Invoice extends Component {
                 <hr></hr>
                 {items}
                 <hr></hr>
-                <p>Total: {this.price}</p>
+                <p>Total: {total}.00</p>
 
             </React.Fragment>
 
         )
     }
+}
+
+const getTotal = items => {
+    var total = 0; 
+    for(var i = 0; i < items.length; i++) {
+        total += items[i].price;
+    }
+    return total;
 }
 
 export default Invoice

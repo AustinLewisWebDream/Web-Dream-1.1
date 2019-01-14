@@ -17,7 +17,7 @@ class HostingPage extends Component {
                             <HostingPlans />
                         </div>
                     </div>
-     
+                
                 </React.Fragment>
             )
         }

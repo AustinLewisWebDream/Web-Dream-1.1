@@ -61,7 +61,6 @@ class AutoRenew extends Component {
         })
     }
     saveAutoRenew() {
-        console.log(this.state.autoRenew)
         fetch(UPDATE_AUTORENEW, {
             method: 'POST',
             headers: {

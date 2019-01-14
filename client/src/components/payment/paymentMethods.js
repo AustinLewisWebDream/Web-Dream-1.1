@@ -27,6 +27,7 @@ class PaymentMethods extends Component {
                             <div value={method.number} className='method-segment'>
                                 <p>************{method.number}</p>
                                 <p className={primary ? 'primary-method' : null}>{primary}</p>
+                                <div></div>
                                 <img onClick={e => this.deletePaymentMethod(e, method.number)} className='delete-icon' src='/images/icons/trashcan.png' />
                             </div>
                         </React.Fragment>

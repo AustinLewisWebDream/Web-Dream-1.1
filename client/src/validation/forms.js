@@ -23,6 +23,13 @@ export const getRegisterErrors = (user, callback) => {
     callback(errors)
 }
 
+export const getUpdatePasswordErrors = (user) => {
+    var errors = validatePassword(user.password);
+    errors = errors.concat(validatePasswordConfirmation(user.password, user.passwordConfirmation));
+
+    return errors;
+}
+
 const validatePassword = (password) => {
     var errors = [];
     if(password.length < REQUIRED_PASSWORD_LENGTH) 
@@ -71,7 +78,7 @@ const validateCardCVC = (cvc) => {
     return errors;
 }
 
-const validateEmail = (email) => {
+export const validateEmail = (email) => {
     var errors = [];
     const requiredSymbol = '@'
     if(isEmpty(email)) 

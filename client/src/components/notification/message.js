@@ -12,8 +12,13 @@ class Message extends Component {
         }
     }
     render() {
+        var messages = this.props.list;
+
         console.log(this.props)
-        const messages = this.props.list.concat(this.props.errors)
+        if(this.props.errors) {
+            messages = this.props.list.concat(this.props.errors)
+        }
+
         const messageList = messages.map(message => {
             return (
                 <React.Fragment>

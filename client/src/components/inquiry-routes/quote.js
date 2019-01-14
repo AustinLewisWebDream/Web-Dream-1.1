@@ -1,6 +1,7 @@
 import React,{ Component } from 'react';
 import TransitionContent from './CSSTransition';
 import { connect } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 
 import { ADD_QUOTE } from '../../routes';
 import TextField from '@material-ui/core/TextField';
@@ -137,7 +138,7 @@ class Quote extends Component {
                     ></TextField>
                     <br></br>
                     <TextField
-                        label='Notes'
+                        label='Remarks'
                         multiline={true}
                         onChange={e => this.handleTextInput(e, 'notes')}
                         value={this.state.notes}
@@ -156,7 +157,11 @@ class Quote extends Component {
 
         const finishedPage = (
             <TransitionContent title={'All Done!'}>
-            
+                <div className='center'>
+                    <img src='/images/icons/checkmark.png' alt='Checkmark Icon' />
+                    <NavLink className='large-link' to='/account/'><p>Go to My Account<img className='large-link-img' src='/images/icons/right-arrow.png' alt='right arrow' /></p></NavLink>
+                </div>
+                
             </TransitionContent>
         )
 
@@ -215,15 +220,17 @@ class Quote extends Component {
         this.setState({ slideNum: this.state.slideNum + Number(e.target.value) })
     }
 
-    onSubmit() {
-        checkErrors(this.state).then(() => {
-            fetch(ADD_QUOTE, {
+    async onSubmit() {
+        try {
+            const errors = await checkErrors(this.state);
+            
+            const response = await fetch(ADD_QUOTE, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'authorization': localStorage.getItem('jwtToken')
-          },
+            },
             body: JSON.stringify({
                 id: this.props.userID,
                 developmentType: this.state.devType,
@@ -233,20 +240,17 @@ class Quote extends Component {
                 notes: this.state.notes,
                 businessName: this.state.businessName,
             })
-            }).then(response => {
-                if(response.ok) {
-                    this.setState({slideNum: this.state.slideNum + 1});
-                    return;
-                }
             })
-        }).catch(err => {
-            console.log(err);
+            const jsonObject = await response.json()
+            this.setState({slideNum: this.state.slideNum + 1});
+
+        } catch (errors) {
+
             this.setState({
                 error: true,
-                message: err
-            });
-        })
-
+                message: errors
+            })
+        }
     }
 }
 
@@ -269,7 +273,7 @@ function checkErrors(state) {
         if(state.websiteType === '') {
             message.push('Please choose a website type')
         }
-        if (message === '') {
+        if (isEmpty(message)) {
             resolve()
         }
         else {

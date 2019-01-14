@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TransitionContent from '../inquiry-routes/CSSTransition'
 import { connect } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 
 import Message from '../notification/message'
 import Invoice from '../invoice';
@@ -8,7 +9,6 @@ import CardForm from '../payment/cardform'
 import PaymentMethods from '../payment/paymentMethods'
 import { ADD_SUBSCRIPTION } from '../../routes'
 import { setRegisterWindow } from '../../actions'
-import { updateCurrentUser } from '../../actions/authentication';
 import isEmpty from '../../validation/is-empty';
 import PopUp from '../popup/popup'
 
@@ -28,7 +28,7 @@ class GetHosting extends Component {
         const invoiceItems = [
             {
                 name: this.state.hostingPlan,
-                price: 0
+                price: getHostingPrice(this.state.hostingPlan)
             }
         ]
 
@@ -81,7 +81,10 @@ class GetHosting extends Component {
 
         const finishedPage = (
             <TransitionContent title={'All Done!'}>
-            
+                <div className='center'>
+                    <img src='/images/icons/checkmark.png' alt='Checkmark Icon' />
+                    <NavLink className='large-link' to='/account/'><p>Go to My Account<img className='large-link-img' src='/images/icons/right-arrow.png' alt='right arrow' /></p></NavLink>
+                </div>
             </TransitionContent>
         )
 
@@ -159,6 +162,11 @@ class GetHosting extends Component {
         this.setState({ hostingPlan: name })
     }
     onSubmit() {
+        if(isEmpty(this.props.userID)) {
+            this.props.setRegisterWindow(true);
+            return;
+        }
+
         checkErrors(this.state, this.props.userID, this.props.paymentMethods).then(() => {
             fetch(ADD_SUBSCRIPTION, {
                 method: 'POST',
@@ -174,8 +182,6 @@ class GetHosting extends Component {
             })
             }).then(response => {
                 if(response.ok) {
-                    console.log(response.body)
-                    this.props.updateCurrentUser(response.body)
                     this.setState({slideNum: this.state.slideNum + 1});
                     return;
                 }
@@ -187,6 +193,21 @@ class GetHosting extends Component {
                 message: err
             });
         })
+    }
+
+}
+
+const getHostingPrice = name => {
+    if(name === 'Starter') {
+        return 4;
+    }
+    if(name === 'Business') {
+        return 8;
+    }
+    if(name === 'Hyper') {
+        return 15;
+    } else {
+        return 0;
     }
 }
 
@@ -219,4 +240,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, { setRegisterWindow, updateCurrentUser })(GetHosting);
+export default connect(mapStateToProps, { setRegisterWindow })(GetHosting);

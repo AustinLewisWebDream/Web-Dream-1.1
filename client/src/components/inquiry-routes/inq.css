@@ -114,6 +114,18 @@
     line-height: 1rem;
 }
 
-.grid-segment-3 {
+.large-link {
+    font-size: 2rem;
+    text-decoration: none;
+    color: inherit;
+}
 
+.large-link * {
+    vertical-align: middle;
+}
+
+.large-link-img {
+    padding-left: 1rem;
+    height: 30px;
+    width: auto;
 }
