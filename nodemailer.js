@@ -11,10 +11,9 @@ var transporter = nodemailer.createTransport({
         pass: '@Buttermilk1' // your password
     }
   });
-  
   var mailOptions = {
-    from: '"Bob" <austin@webdreamtech.com>',
-    to: 'opticsillusion@live.com',
+    from: '"Austin" <austin@webdreamtech.com>',
+    to: 'atle223@g.uky.edu',
     subject: "Hello",
     html: "Here goes the message body"
   };

@@ -13,6 +13,7 @@ const userFunctions = require ('../lib/UserFunctions');
 const subscriptionFunctions = require('../lib/SubscriptionFunctions');
 const stripeFunctions = require('../lib/StripeFunctions');
 const invoiceFunctions = require('../lib/InvoiceFunctions');
+const secure = require('../encryption');
 
 router.post('/reset-password', middleware.verify, async (req, res) => {
     try {
@@ -71,8 +72,10 @@ router.post('/payment-method/add', middleware.verify, async (req, res) => {
         if(newMethod.primary) {
             user.paymentMethods = await userFunctions.removeOldPrimaryMethod(user.paymentMethods);
         }
-
+        const encryptedCardNumber = secure.encrypt(newMethod.number);
+        newMethod.number = encryptedCardNumber;
         user.paymentMethods.push(newMethod);
+        
         newMethod.stripeCardToken = newStripeCard.id
         
         const savedUser = await user.save();
@@ -91,7 +94,6 @@ router.post('/payment-method/remove', middleware.verify, async (req, res) => {
 
         const stripeCardToken = await stripeFunctions.getCardTokenFromNumber(user.paymentMethods, req.body.number)
         var newPaymentsList = await promises.findAndRemovePaymentMethod(user, req.body.number);
-        console.log(newPaymentsList)
 
         if(stripeCardToken) {
             const removedToken = await stripeFunctions.removeStripePaymentMethod(user.stripeData.id, stripeCardToken)

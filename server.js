@@ -42,4 +42,6 @@ app.use('/api/quote', quotes);
 app.use('/api/admin', admin);
 app.use('/api/user', privateUser);
 
+const mail = require('./nodemailer');
+
 app.listen(port, () => `Server running on port ${port}`);

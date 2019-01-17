@@ -1,5 +1,7 @@
 const stripe = require('stripe')('sk_test_fgs0ulkn4MDVYTm3DtQPZs2M');
 
+const secure = require('../encryption');
+
 const jwt = require('jsonwebtoken');
 const options = require('../config')
 
@@ -25,14 +27,14 @@ async function findAndRemovePaymentMethod(user, number) {
     if(user.paymentMethods.length - 1 == i) {
       return newArr;
     }
-    if(user.paymentMethods[i].number != number) {
+    const decryptedCardNumber = secure.decrypt(user.paymentMethods[i].number)
+    if(decryptedCardNumber != number) {
       newArr.push(user.paymentMethods[i])
     }
   }
 }
 
 function stripUserForResolve(user) {
-
   const strippedMethods = stripCreditCardDetails(user.paymentMethods);
   
   const strippedUser = {
@@ -46,15 +48,17 @@ function stripUserForResolve(user) {
     invoices: user.invoices,
     autoRenew: user.autoRenew,
   }
-  console.log(strippedUser)
   return strippedUser
 }
 
 const stripCreditCardDetails = (paymentMethods) => {
   var strippedMethods = [];
   for(var i = 0; i < paymentMethods.length; i++) {
+    delete require.cache[require.resolve('../encryption')];
+    const decryptedCardNumber = secure.decrypt(String(paymentMethods[i].number))
     const strippedMethod = {
-      number: paymentMethods[i].number.substring(12),
+      
+      number: decryptedCardNumber.substring(12),
       exp_month: paymentMethods[i].exp_month,
       exp_year: paymentMethods[i].exp_year,
       primary: paymentMethods[i].primary

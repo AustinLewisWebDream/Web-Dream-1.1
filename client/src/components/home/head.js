@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { registerUser } from '../../actions/authentication';
+import Message from '../notification/message';
+import isEmpty from '../../validation/is-empty';
 
 import './home.css';
+import { getRegisterErrors } from '../../validation/forms';
 
 class Head extends Component {
     constructor(props) {
@@ -11,6 +14,8 @@ class Head extends Component {
             email: '',
             password: '',
             password_confirm: '',
+            message: [],
+            successful: null
         }
         this.updatePassword = this.updatePassword.bind(this);
         this.updateEmail = this.updateEmail.bind(this)
@@ -36,6 +41,8 @@ class Head extends Component {
                         <input onChange={this.updatePassword_Confirm} className='head-input' type='password' placeholder='Confirm Password' />
                     </div>
                     <button onClick={e => this.onSubmit(e)} className='block-btn'>Create Account</button>
+                    <br></br>
+                    {isEmpty(this.state.message) ? null : <Message type={this.state.successful ? 'good' : 'bad'} list={this.state.message} /> }
                 </div>
             </div>
         )
@@ -50,14 +57,34 @@ class Head extends Component {
         this.setState({ email: e.target.value })
     }
     onSubmit(e) {
+        
         e.preventDefault();
         const user = {
             name: this.state.name,
             email: this.state.email,
             password: this.state.password,
-            password_confirm: this.state.password_confirm
+            passwordConfirmation: this.state.password_confirm
         }
-        this.props.registerUser(user, this.props.history);
+        getRegisterErrors(user, errors => {
+            if(isEmpty(errors)) {
+                
+                this.props.registerUser(user, this.props.history);
+                this.setState({
+                    successful: true,
+                    message: ['Account Created'],
+                    email: '',
+                    password: '',
+                    password_confirm: '',
+                });
+            } else {
+                this.setState({
+                    successful: false,
+                    message: errors
+                })
+            }
+            
+        })
+        
     }
 
 }
