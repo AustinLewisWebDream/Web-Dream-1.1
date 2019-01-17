@@ -4,6 +4,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Switch from '@material-ui/core/Switch';
 
+import { updateCurrentUser } from '../../actions/authentication';
+
 import { UPDATE_AUTORENEW } from '../../routes';
 
 class AutoRenew extends Component {
@@ -60,8 +62,8 @@ class AutoRenew extends Component {
             [name]: e.target.checked
         })
     }
-    saveAutoRenew() {
-        fetch(UPDATE_AUTORENEW, {
+    saveAutoRenew = async() => {
+        const response = await fetch(UPDATE_AUTORENEW, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -73,13 +75,16 @@ class AutoRenew extends Component {
                 autoRenew: this.state.autoRenew,
             })
         })
+        const json = await response.json();
+        this.props.updateCurrentUser(json);
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-        autoRenew: state.auth.user.autoRenew
+        autoRenew: state.auth.user.autoRenew,
+        userID: state.auth.user.id 
     }
 }
 
-export default connect(mapStateToProps)(AutoRenew)
+export default connect(mapStateToProps, { updateCurrentUser })(AutoRenew)

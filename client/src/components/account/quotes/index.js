@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import redux from 'redux';
 import { connect } from 'react-redux';
 import QuotesList from './list';
 

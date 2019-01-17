@@ -59,8 +59,11 @@ export const loginUser = (user) => dispatch => {
             });
 }
 
-export const updateCurrentUser = (user) => dispatch => {
-    dispatch(setCurrentUser(user))
+export const updateCurrentUser = token => dispatch => {
+    localStorage.setItem('jwtToken', token);
+    const decoded = jwt_decode(token);
+    console.log(decoded);
+    dispatch(setCurrentUser(decoded));
 }
 
 export const setCurrentUser = decoded => dispatch => {

@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const passport = require('passport');
 const bcrypt = require('bcryptjs');
 
 const middleware = require('../lib/middleware');
@@ -28,7 +27,8 @@ router.post('/reset-password', middleware.verify, async (req, res) => {
 
         const savedUser = await user.save()
         const payload = await promises.stripUserForResolve(savedUser)
-        return res.json(payload);
+        const token = await promises.genJWT(payload);
+        res.json(token);
     } catch (error) {
         console.log(error)
         res.sendStatus(500);
@@ -37,17 +37,20 @@ router.post('/reset-password', middleware.verify, async (req, res) => {
 
 router.post('/reset-email', middleware.verify, async (req, res) => {
     try {
-        const emailInUse = await User.findOne({ email: req.body.email });
-
-        if(emailInUse) {
+        const alreadyUsed = await User.findOne({ email: req.body.email });
+        if(alreadyUsed) {
             return res.status(400).json({data: 'Email already in use'})
         }
-
         const user = await User.findById(req.body.id);
+        console.log(user);
         user.email = req.body.email
+        console.log(user);
+
         const savedUser = await user.save()
+
         const payload = await promises.stripUserForResolve(savedUser)
-        res.json(payload);
+        const token = await promises.genJWT(payload);
+        res.json(token);
     } catch (error) {
         console.log(error)
         res.status(500).json({data: 'Internal Server Error'})
@@ -74,7 +77,8 @@ router.post('/payment-method/add', middleware.verify, async (req, res) => {
         
         const savedUser = await user.save();
         const payload = promises.stripUserForResolve(savedUser)
-        res.json(payload)
+        const token = await promises.genJWT(payload);
+        res.json(token);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -100,7 +104,8 @@ router.post('/payment-method/remove', middleware.verify, async (req, res) => {
         user.paymentMethods = newPaymentsList;
         const savedUser = await user.save();
         const payload = promises.stripUserForResolve(savedUser)
-        res.json(payload)
+        const token = await promises.genJWT(payload);
+        res.json(token);
     } catch (error) {
         console.log(error)
         return res.sendStatus(500);
@@ -129,7 +134,8 @@ router.post('/subscription/add', middleware.verify, async (req, res) => {
 
         const savedUser = await user.save();
         const payload = await promises.stripUserForResolve(savedUser);
-        res.json(payload);
+        const token = await promises.genJWT(payload);
+        res.json(token);
     } catch (error) {
         console.log(error)
         res.sendStatus(500);
@@ -138,9 +144,12 @@ router.post('/subscription/add', middleware.verify, async (req, res) => {
 
 router.post('/auto-renew', middleware.verify, async (req, res) => {
     try {
-        const user = await User.findOneAndUpdate({id: req.body.id}, {autoRenew: req.body.autoRenew});
-        const payload = promises.stripUserForResolve(user);
-        res.json(payload);
+        var user = await User.findById(req.body.id);
+        user.autoRenew = (Boolean(req.body.autoRenew))
+        user = await user.save();
+        const payload = await promises.stripUserForResolve(user);
+        const token = await promises.genJWT(payload);
+        res.json(token);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -161,7 +170,8 @@ router.post('/pay-invoice', middleware.verify, async (req, res) => {
         user.markModified('invoices')
         const savedUser = await user.save();
         const payload = await promises.stripUserForResolve(savedUser);
-        res.json(payload);
+        const token = await promises.genJWT(payload);
+        res.json(token);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -175,7 +185,8 @@ router.post('/quote/add', middleware.verify, async (req, res) => {
         user.quotes.push(quote)
         const savedUser = await user.save();
         const payload = await promises.stripUserForResolve(savedUser);
-        res.json(payload);
+        const token = await promises.genJWT(payload);
+        res.json(token);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

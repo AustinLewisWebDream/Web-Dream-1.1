@@ -53,7 +53,7 @@ class UpdatePasswordForm extends Component {
                 />
                 <button onClick={e => this.handleSubmit(e)} className='block-btn small'>Update</button>
                 <br></br>
-                {!isEmpty(this.state.message) ? infoMessage : null}
+                
                 
 
             </React.Fragment>
@@ -71,6 +71,8 @@ class UpdatePasswordForm extends Component {
                 <h3>Password</h3>
                 <p>********</p>
                   {this.state.updatePassword ? updatePasswordForm : showFormButton}
+                  <br></br>
+                  {!isEmpty(this.state.message) ? infoMessage : null}
                 </div>
             </React.Fragment>
         )
@@ -122,6 +124,7 @@ class UpdatePasswordForm extends Component {
                 this.setState({ 
                     successful: true,
                     message: ['Password Successfully Updated'],
+                    updatePassword: false,
                     password: '',
                     confirmation: '',
                     oldPassword: '',

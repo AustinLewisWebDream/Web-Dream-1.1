@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import TextField from '@material-ui/core/TextField';
 import Message from '../notification/message';
 import isEmpty from '../../validation/is-empty';
+import { updateCurrentUser } from '../../actions/authentication';
 
 import { validateEmail } from '../../validation/forms';
 
@@ -45,7 +46,7 @@ class UpdateEmailForm extends Component {
                 />
                 <button onClick={e => this.handleSubmit()} className='block-btn small'>Update</button>
                 <br></br>
-                {!isEmpty(this.state.message) ? errSuccessMessage : null}
+                
             </React.Fragment>
         )
 
@@ -61,7 +62,10 @@ class UpdateEmailForm extends Component {
                 <h3>Email</h3>
                 <p>My email: <span className='good'>{this.props.email}</span></p>
                 {this.state.updateEmail ? updateEmailForm : updateEmailButton }
+                <br></br>
+                {!isEmpty(this.state.message) ? errSuccessMessage : null}
                 </div>
+                
             </React.Fragment>
         )
     }
@@ -109,8 +113,10 @@ class UpdateEmailForm extends Component {
                 badRequest: true
             })
         } else {
+            this.props.updateCurrentUser(json);
             this.setState({ 
                 message: ['Email successfully updated'],
+                updateEmail: false,
                 badRequest: false
             })
         }
@@ -125,4 +131,4 @@ function mapStateToProps(state) {
 }
 
 
-export default connect(mapStateToProps)(UpdateEmailForm)
+export default connect(mapStateToProps, { updateCurrentUser })(UpdateEmailForm)

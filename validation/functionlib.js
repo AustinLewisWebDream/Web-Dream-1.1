@@ -1,5 +1,9 @@
 const stripe = require('stripe')('sk_test_fgs0ulkn4MDVYTm3DtQPZs2M');
 
+const jwt = require('jsonwebtoken');
+const options = require('../config')
+
+
 async function createUserStripeAccount(id, callback) {
   console.log('method called')
   const customer = await stripe.customers.create({
@@ -60,4 +64,14 @@ const stripCreditCardDetails = (paymentMethods) => {
   return strippedMethods;
 }
 
-module.exports = {createUserStripeAccount, findAndRemovePaymentMethod, stripUserForResolve}
+const genJWT = async payload => {
+  try {
+    const token = await jwt.sign(payload, options.secret, {expiresIn: 3600});
+    return 'Bearer ' + token;
+  } catch(error) {
+    console.log(error);
+    throw 'Error generating token'
+  } 
+}
+
+module.exports = {createUserStripeAccount, findAndRemovePaymentMethod, stripUserForResolve, genJWT}

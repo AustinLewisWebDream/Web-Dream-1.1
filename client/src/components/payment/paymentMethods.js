@@ -41,8 +41,8 @@ class PaymentMethods extends Component {
             )
         }
     }
-    deletePaymentMethod(e, number) {
-        fetch(REMOVE_PAYMENT_METHOD, {
+    deletePaymentMethod = async (e, number) => {
+        const res = await fetch(REMOVE_PAYMENT_METHOD, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -57,7 +57,6 @@ class PaymentMethods extends Component {
             response.json().then(user => {
                 this.props.updateCurrentUser(user);
             })
-            
         })
     }
     handleInput(e, name) {

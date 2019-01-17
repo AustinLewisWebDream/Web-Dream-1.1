@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import TransitionContent from '../inquiry-routes/CSSTransition'
+import TransitionContent from '../inquiry-routes/CSSTransition';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 
-import Message from '../notification/message'
+import Message from '../notification/message';
 import Invoice from '../invoice';
-import CardForm from '../payment/cardform'
-import PaymentMethods from '../payment/paymentMethods'
-import { ADD_SUBSCRIPTION } from '../../routes'
-import { setRegisterWindow } from '../../actions'
+import CardForm from '../payment/cardform';
+import PaymentMethods from '../payment/paymentMethods';
+import { ADD_SUBSCRIPTION } from '../../routes';
+import { updateCurrentUser } from '../../actions/authentication';
+import { setRegisterWindow } from '../../actions';
 import isEmpty from '../../validation/is-empty';
 import PopUp from '../popup/popup'
 
@@ -161,40 +162,40 @@ class GetHosting extends Component {
     onTypeSelect(name) {
         this.setState({ hostingPlan: name })
     }
-    onSubmit() {
+    onSubmit = async () => {
         if(isEmpty(this.props.userID)) {
             this.props.setRegisterWindow(true);
             return;
         }
 
-        checkErrors(this.state, this.props.userID, this.props.paymentMethods).then(() => {
-            fetch(ADD_SUBSCRIPTION, {
+        try {
+            const errors = await checkErrors(this.state, this.props.userID, this.props.paymentMethods);
+            const res = await fetch(ADD_SUBSCRIPTION, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'authorization': localStorage.getItem('jwtToken')
-          },
-            body: JSON.stringify({
-                id: this.props.userID,
-                type: 'hosting',
-                name: this.state.hostingPlan
+                },
+                    body: JSON.stringify({
+                        id: this.props.userID,
+                        type: 'hosting',
+                        name: this.state.hostingPlan
+                    })
             })
-            }).then(response => {
-                if(response.ok) {
-                    this.setState({slideNum: this.state.slideNum + 1});
-                    return;
-                }
-            })
-        }).catch(err => {
-            console.log(err);
+            if(res.status == 200) {
+                const json = await res.json();
+                this.props.updateCurrentUser(json)
+                this.setState({slideNum: this.state.slideNum + 1});
+            }
+            
+        } catch (err) {
             this.setState({
                 error: true,
                 message: err
             });
-        })
+        }
     }
-
 }
 
 const getHostingPrice = name => {
@@ -240,4 +241,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, { setRegisterWindow })(GetHosting);
+export default connect(mapStateToProps, { setRegisterWindow, updateCurrentUser })(GetHosting);

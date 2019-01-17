@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import isEmpty from '../../../validation/is-empty';
 import Invoice from '../../invoice';
 import { PAY_INVOICE } from '../../../routes';
+import { updateCurrentUser } from '../../../actions/authentication';
+import Message from '../../notification/message';
 
 const InvoicesPage = props => {
     return (
@@ -18,7 +20,9 @@ class List extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            invoiceID: ''
+            invoiceID: '',
+            badResponse: null,
+            notifications: []
         }
     }
     render() {
@@ -35,6 +39,8 @@ class List extends Component {
                         <React.Fragment>
                             <Invoice items={invoice.services}/>
                             {invoice.paid ? null : payButton}
+                            <br></br>
+                            {isEmpty(this.state.notifications) ? null : <Message className={this.state.badResponse ? 'bad' : 'good'} list={this.state.notifications} />}
                         </React.Fragment>
                     )
                     return(
@@ -63,8 +69,8 @@ class List extends Component {
         }
 
     }
-    payInvoice(e , id) {
-        fetch(PAY_INVOICE, {
+    payInvoice = async (e , id) => {
+        const response = await fetch(PAY_INVOICE, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -76,6 +82,19 @@ class List extends Component {
                 invoiceID: id
             })
         })
+        if(response.status != 200 ) {
+            this.setState({
+                badResponse: true,
+                notifications: ['Payment was unable to be processed']
+            });
+        } else {
+            const json = response.json();
+            this.props.updateCurrentUser(json);
+            this.setState({
+                badResponse: false,
+                notifications: ['Invoice Paid']
+            });
+        }
     }
 
     expandInvoice(id) {
@@ -90,4 +109,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(InvoicesPage)
+export default connect(mapStateToProps, { updateCurrentUser })(InvoicesPage)

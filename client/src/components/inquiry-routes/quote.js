@@ -3,11 +3,13 @@ import TransitionContent from './CSSTransition';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 
+import { updateCurrentUser } from '../../actions/authentication';
 import { ADD_QUOTE } from '../../routes';
 import TextField from '@material-ui/core/TextField';
 import RadioButton from '../buttons/radio'
 import Message from '../notification/message'
 import isEmpty from '../../validation/is-empty';
+
 
 
 import './inq.css';
@@ -241,11 +243,11 @@ class Quote extends Component {
                 businessName: this.state.businessName,
             })
             })
-            const jsonObject = await response.json()
+            const json = await response.json()
             this.setState({slideNum: this.state.slideNum + 1});
+            this.props.updateCurrentUser(json);
 
         } catch (errors) {
-
             this.setState({
                 error: true,
                 message: errors
@@ -288,4 +290,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(Quote);
+export default connect(mapStateToProps, { updateCurrentUser } )(Quote);

@@ -22,6 +22,7 @@ import Development from './components/development/development';
 import Account from './components/account/account';
 import GetHosting from './components/get-hosting/get-hosting';
 import Quote from './components/inquiry-routes/quote';
+import LoginPage from './components/loginpage';
 
 
 
@@ -51,7 +52,7 @@ class App extends Component {
             <Route path='/hosting' component={ Hosting } />
             <Route path='/development' component={ Development } />
             <Route path='/design' component={ Design } />
-            
+            <Route path='/login' component={ LoginPage } />
             <Route path='/quote' component={ Quote } />
             <Route path='/get-hosting' component={ GetHosting } />
             <AuthRoute path='/account' component={ Account } />
