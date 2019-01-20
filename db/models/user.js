@@ -27,6 +27,7 @@ const UserSchema = new Schema({
         type: String,
         default: 'normal'
     },
+    tempToken: {},
     stripeData: {},
     quotes: [],
     subscriptions: [],

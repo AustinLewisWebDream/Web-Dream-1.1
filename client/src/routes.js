@@ -19,3 +19,7 @@ export const PAY_INVOICE = URL + '/api/user/pay-invoice';
 export const UPDATE_PASSWORD = URL + '/api/user/reset-password';
 
 export const UPDATE_EMAIL = URL + '/api/user/reset-email';
+
+export const PASSWORD_RECOVER = URL + '/api/users/recover-password';
+
+export const PASSWORD_RESET = URL + '/api/users/verify-token'

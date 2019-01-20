@@ -7,6 +7,7 @@ const User = require('../db/models/User');
 const promises = require('../validation/functionlib');
 const stripeFunctions = require('../lib/StripeFunctions');
 const userFunctions = require('../lib/UserFunctions');
+const mailer = require('../lib/MailFunctions');
 const options = require('../config');
 
 router.post('/register', async (req, res) => {
@@ -68,6 +69,42 @@ router.post('/login', async (req, res) => {
     } catch(error) {
         console.log(error)
         res.sendStatus(500);
+    }
+});
+
+router.post('/recover-password', async (req, res) => {
+    console.log('Recover password route hit')
+    try {
+        const user = await User.findOne({ email: req.body.email });
+        if(user == null) {
+            return res.status(400).json({data: 'Email not found'})
+        }
+        const token = await promises.genToken();
+        user.tempToken = token;
+        const savedUser = await user.save();
+        await mailer.sendPasswordReset(user.email, token);
+        res.status(200);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({data: 'Internal server error'})
+    }
+}); 
+
+router.post('/verify-token', async (req, res) => {
+    const user = await User.findOne({ email: req.body.email });
+    const token = req.body.token;
+    const newPassword = req.body.password;
+    if(!promises.verifyToken(token, user.tempToken)) {
+        return res.status(400).json({data: 'Incorrect token'})
+    }
+    try {
+        user.token = { time: null, token: null, password: null }
+        user.password = await userFunctions.hashEncrypt(newPassword);
+        const savedUser = await user.save();
+        res.status(200).json({data: 'Password Successfully Reset'});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({data: 'Internal server error'})
     }
 });
 

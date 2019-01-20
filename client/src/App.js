@@ -23,6 +23,7 @@ import Account from './components/account/account';
 import GetHosting from './components/get-hosting/get-hosting';
 import Quote from './components/inquiry-routes/quote';
 import LoginPage from './components/loginpage';
+import PasswordRecovery from './components/passwordrecover';
 
 
 
@@ -55,6 +56,7 @@ class App extends Component {
             <Route path='/login' component={ LoginPage } />
             <Route path='/quote' component={ Quote } />
             <Route path='/get-hosting' component={ GetHosting } />
+            <Route path='/recover' component={ PasswordRecovery } />
             <AuthRoute path='/account' component={ Account } />
             <Route component={ Error } />
           </Switch>

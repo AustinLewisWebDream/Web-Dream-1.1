@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { loginUser } from '../actions/authentication';
-import Message from './notification/message'
+import Message from './notification/message';
+import { NavLink } from 'react-router-dom';
 
 import './forms.css'
 
@@ -58,7 +59,7 @@ class LoginPage extends Component {
                             Login
                         </button>
                         <div className='sub-button-text'>
-                            <p>Reset Password</p>
+                            <NavLink className='no-link' to='/recover'><p>Reset Password</p></NavLink>
                         </div>
                         <Message type={'error'} list={[]} />
                 </form>               

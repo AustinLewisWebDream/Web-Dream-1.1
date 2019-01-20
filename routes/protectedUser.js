@@ -43,12 +43,8 @@ router.post('/reset-email', middleware.verify, async (req, res) => {
             return res.status(400).json({data: 'Email already in use'})
         }
         const user = await User.findById(req.body.id);
-        console.log(user);
         user.email = req.body.email
-        console.log(user);
-
         const savedUser = await user.save()
-
         const payload = await promises.stripUserForResolve(savedUser)
         const token = await promises.genJWT(payload);
         res.json(token);
@@ -128,7 +124,7 @@ router.post('/subscription/add', middleware.verify, async (req, res) => {
         }
 
         const invoice = await invoiceFunctions.generateInvoice(subscription.name, [newService], true, new Date())
-        // TODO: Generate Receipt
+        // mailer.sendReceipt(invoice, email)
 
         user.invoices.push(invoice);
         user.subscriptions = updatedSubscriptions;
@@ -167,6 +163,9 @@ router.post('/pay-invoice', middleware.verify, async (req, res) => {
         const payment = await stripeFunctions.processStripePayment(user.stripeData.id, invoiceToBePaid.total);
         user.paymentHistory.push(payment);
         const paidInvoice = await invoiceFunctions.markPaid(invoiceToBePaid);
+
+        // mailer.sendReceipt(invoice, email)
+
         const newInvoicesList = await invoiceFunctions.findAndReplaceInvoice(invoices, invoiceToBePaid, paidInvoice)
         user.invoices = newInvoicesList;
         user.markModified('invoices')
