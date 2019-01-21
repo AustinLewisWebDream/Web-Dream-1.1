@@ -1,13 +1,19 @@
 const stripe = require('stripe')('sk_test_fgs0ulkn4MDVYTm3DtQPZs2M');
 
-
-
 const secure = require('../encryption');
+
+const crypto = require('crypto');
+const hash = crypto.createHmac('sha256', 'a secret').update('I love cupcakes').digest('hex');
 
 const jwt = require('jsonwebtoken');
 const options = require('../config');
-const otplib = require ('otplib')
+const totp = require ('otplib/totp');
+const authenticator = require('otplib/authenticator');
 
+
+
+totp.options = { crypto };
+const secret = 'KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD'
 
 async function createUserStripeAccount(id, callback) {
   console.log('method called')
@@ -82,8 +88,7 @@ const genJWT = async payload => {
 }
 
 const genToken = async () => {
-  const secret = otplib.authenticator.generateSecret();
-  const token = otplib.authenticator.generate(secret);
+  const token = totp.generate(secret);
   return {
     time: new Date(),
     token,
@@ -91,8 +96,8 @@ const genToken = async () => {
   }
 }
 
-const verifyToken = (userProvidedToken, tokenObject) => {
-  return otplib.authenticator.check(userProvidedToken, tokenObject.token)
+const verifyToken = (token, tokenObject) => {
+  return token == tokenObject.token
 }
 
 module.exports = {createUserStripeAccount, findAndRemovePaymentMethod, stripUserForResolve, genJWT, genToken, verifyToken}

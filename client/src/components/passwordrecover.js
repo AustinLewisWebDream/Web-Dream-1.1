@@ -4,6 +4,8 @@ import { setLoginWindow } from '../actions';
 import Message from './notification/message'
 import isEmpty from '../validation/is-empty';
 import { PASSWORD_RECOVER, PASSWORD_RESET } from '../routes';
+import { getUpdatePasswordErrors } from '../validation/forms';
+import axios from 'axios';
 
 import './forms.css'
 
@@ -17,6 +19,7 @@ class LoginPage extends Component {
             confirmPassword: '',
             token: '',
             messages: [],
+            successful: null,
             currentForm: 1
         }
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -29,47 +32,43 @@ class LoginPage extends Component {
     }
 
     handleSubmit = async (e) => {
-        this.setState({
-            currentForm: 2
-        });
-        const response = await fetch(PASSWORD_RECOVER, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: this.state.email
-            })
-        })
-        if(response.status != 200) {
+        try {
+            await axios.post(PASSWORD_RECOVER, {email: this.state.email})
             this.setState({
-                currentForm: 1,
-                messages: ['User Not Found']
+                currentForm: 2,
+                messages: [],
+                successful: null
             })
-            return
-        } 
+        } catch (error) {
+            this.setState({
+                successful: false,
+                messages: [error.response.data.data]
+            })
+        }        
     }
 
     submittPasswordChange = async (email) => {
-        const response = await fetch(PASSWORD_RESET, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: this.state.email,
-                password: this.state.password,
-                token: this.state.token
-            })
-        })
-        if(response.status != 200) {
+        try {
+            const errors = await getUpdatePasswordErrors({password: this.state.password, passwordConfirmation: this.state.confirmPassword})
+            if(!isEmpty(errors)) {
+                this.setState({
+                    messages: errors,
+                    successful: false 
+                })
+                return;
+            }
+            const response = await axios.post(PASSWORD_RESET, {email: this.state.email, password: this.state.password, token: this.state.token})
             this.setState({
-                token: '',
+                messages: [response.data.data],
+                successful: true,
                 password: '',
                 confirmPassword: '',
-                messages: ['Please ensure the correct token was input']
+                token: ''
+            })
+        } catch (error) {
+            this.setState({
+                messages: [error.response.data.data],
+                successful: false
             })
         }
     }
@@ -127,7 +126,7 @@ class LoginPage extends Component {
                             Submit
                         </button>
                         <br></br>
-                        {isEmpty(this.state.messages) ? null : <Message type={'error'} list={this.state.messages} />}
+                        {isEmpty(this.state.messages) ? null : <Message type={this.state.successful ? 'good' : 'error'} list={this.state.messages} />}
             </React.Fragment>
         )
 

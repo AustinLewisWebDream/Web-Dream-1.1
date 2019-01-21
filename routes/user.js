@@ -73,7 +73,6 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/recover-password', async (req, res) => {
-    console.log('Recover password route hit')
     try {
         const user = await User.findOne({ email: req.body.email });
         if(user == null) {
@@ -83,7 +82,7 @@ router.post('/recover-password', async (req, res) => {
         user.tempToken = token;
         const savedUser = await user.save();
         await mailer.sendPasswordReset(user.email, token);
-        res.status(200);
+        return res.status(200).json({data: 'Recovery Email Sent'})
     } catch (error) {
         console.log(error)
         res.status(500).json({data: 'Internal server error'})

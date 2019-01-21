@@ -14,6 +14,7 @@ const subscriptionFunctions = require('../lib/SubscriptionFunctions');
 const stripeFunctions = require('../lib/StripeFunctions');
 const invoiceFunctions = require('../lib/InvoiceFunctions');
 const secure = require('../encryption');
+const mailer = require('../lib/MailFunctions');
 
 router.post('/reset-password', middleware.verify, async (req, res) => {
     try {
@@ -124,7 +125,7 @@ router.post('/subscription/add', middleware.verify, async (req, res) => {
         }
 
         const invoice = await invoiceFunctions.generateInvoice(subscription.name, [newService], true, new Date())
-        // mailer.sendReceipt(invoice, email)
+        await mailer.sendReceipt(user.email, invoice)
 
         user.invoices.push(invoice);
         user.subscriptions = updatedSubscriptions;
@@ -164,7 +165,7 @@ router.post('/pay-invoice', middleware.verify, async (req, res) => {
         user.paymentHistory.push(payment);
         const paidInvoice = await invoiceFunctions.markPaid(invoiceToBePaid);
 
-        // mailer.sendReceipt(invoice, email)
+        await mailer.sendReceipt(invoice, email)
 
         const newInvoicesList = await invoiceFunctions.findAndReplaceInvoice(invoices, invoiceToBePaid, paidInvoice)
         user.invoices = newInvoicesList;

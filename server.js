@@ -36,6 +36,9 @@ require('./passport')(passport);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// Static image serving for emails
+app.use('/api/static/images', express.static('public/images'))
+
 // Route to access the API
 app.use('/api/users', users);
 app.use('/api/quote', quotes);
