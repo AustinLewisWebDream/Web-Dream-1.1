@@ -14,7 +14,6 @@ class Message extends Component {
     render() {
         var messages = this.props.list;
 
-        console.log(this.props)
         if(this.props.errors) {
             messages = this.props.list.concat(this.props.errors)
         }

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { NavLink } from 'react-router-dom';
 
 import './footer.css';
 
@@ -31,7 +32,7 @@ class Footer extends Component {
                     </div>
                 </div>
                 <hr></hr>
-                <div className='center-div'>
+                <div className='center-footer'>
                     <div className='icon-grid'>
                         <img src='/images/icons/facebook.png' alt='facebook icon' />
                         <img src='/images/icons/twitter.png' alt='twitter icon' />

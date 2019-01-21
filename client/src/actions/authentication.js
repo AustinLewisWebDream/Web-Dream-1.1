@@ -46,12 +46,12 @@ export const loginUser = (user) => dispatch => {
                     type: GET_ERRORS,
                     payload: []
                 })
+                window.location.href = '/account'
                 dispatch(setCurrentUser(decoded))
                 dispatch(setLoginWindow(false));
                 dispatch(setRegisterWindow(false));
             })
             .catch(err => {
-                console.log(err.response.data)
                 dispatch({
                     type: GET_ERRORS,
                     payload: err.response.data.data

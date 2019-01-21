@@ -34,10 +34,6 @@ body h1 {
   border-bottom: 2px solid white;
 }
 
-input:focus {
-
-}
-
 .field {
   margin-bottom: 1rem;
 }
@@ -318,4 +314,9 @@ button {
 .no-link-style {
   color: inherit;
   text-decoration: none;
+}
+
+.center-footer {
+  display: block;
+  text-align: center;
 }

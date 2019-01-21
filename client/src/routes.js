@@ -1,4 +1,4 @@
-const URL = 'http://localhost:5000'
+const URL = 'https://www.webdreamtech.com'
 
 export const REMOVE_PAYMENT_METHOD = URL + '/api/user/payment-method/remove';
 

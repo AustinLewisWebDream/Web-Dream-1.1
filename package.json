@@ -1,7 +1,7 @@
 {
-  "name": "reactexpress",
-  "version": "1.0.0",
-  "description": "Starter kit for creating React and Express apps",
+  "name": "webdreambackend",
+  "version": "0.9.0",
+  "description": "Proprietary web application for Web Dream LLC.",
   "main": "server.js",
   "scripts": {
     "client-install": "cd client && npm install",
@@ -10,8 +10,8 @@
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
-  "author": "Brad Traversy",
-  "license": "MIT",
+  "author": "Austin Lewis",
+  "license": "UNLICENSED",
   "devDependencies": {
     "nodemon": "^1.18.7"
   },
