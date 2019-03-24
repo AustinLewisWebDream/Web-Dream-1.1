@@ -202,3 +202,13 @@
 .quote-container p {
     font-size: 1.2rem;
 }
+
+.quote-price-grid {
+    margin-top: 2rem;
+    width: 50%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.quote-price-grid p {
+    font-size: 2rem;
+}

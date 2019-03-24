@@ -56,7 +56,7 @@ class Head extends Component {
     updateEmail(e) {
         this.setState({ email: e.target.value })
     }
-    onSubmit(e) {
+    onSubmit = async (e) => {
         
         e.preventDefault();
         const user = {
@@ -65,10 +65,23 @@ class Head extends Component {
             password: this.state.password,
             passwordConfirmation: this.state.password_confirm
         }
-        getRegisterErrors(user, errors => {
-            if(isEmpty(errors)) {
-                
-                this.props.registerUser(user, this.props.history);
+
+        try {
+            getRegisterErrors(user, async (errors) => {
+                if(!isEmpty(errors)) {
+                    this.setState({
+                        message: errors,
+                        successful: false
+                    });
+                }
+                await this.props.registerUser(user, this.props.history)
+                if(isEmpty(this.props.errors)) {
+                    this.setState({
+                        message: this.props.errors,
+                        successful: false
+                    });
+                    return;
+                }
                 this.setState({
                     successful: true,
                     message: ['Account Created'],
@@ -76,15 +89,10 @@ class Head extends Component {
                     password: '',
                     password_confirm: '',
                 });
-            } else {
-                this.setState({
-                    successful: false,
-                    message: errors
-                })
-            }
-            
-        })
-        
+            })
+        } catch (err) {
+            console.log(err)
+        }
     }
 
 }

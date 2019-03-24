@@ -38,7 +38,15 @@ body h1 {
   margin-bottom: 1rem;
 }
 
+.inline-input-padding {
+  display: inline-block;
+  padding: 0 1rem;
+}
 
+.move-baseline {
+  display: inline-block;
+  vertical-align: baseline;
+}
 
 /* Text colors */
 .primary-dark-bg {
@@ -101,6 +109,26 @@ button {
   padding: .5rem;
   border-radius: 50px;
   background-color: rgb(38, 136, 248);
+}
+
+.inline-btn {
+  border: none;
+  outline: none;
+  font-size: 1.1rem;
+  color: white;
+  padding: .5rem 1.5rem .5rem 1.5rem;
+  border-radius: 50px;
+  background-color: var(--primary-color);
+}
+
+.inline-btn:hover {
+  cursor: pointer;
+  background-color: rgb(72, 118, 247);
+}
+
+.inline-btn:active {
+  transition: transform .1s;
+  transform: translateY(1px);
 }
 
 .block-btn:hover {

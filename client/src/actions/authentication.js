@@ -4,6 +4,7 @@ import setAuthToken from '../setAuthToken';
 import { REGISTER_USER } from '../routes';
 import jwt_decode from 'jwt-decode';
 import { setRegisterWindow, setLoginWindow } from './index';
+import { LOGIN } from '../routes';
 
 export const registerUser = (user) => dispatch => {
     const response = fetch(REGISTER_USER, {
@@ -35,7 +36,7 @@ export const registerUser = (user) => dispatch => {
 }
 
 export const loginUser = (user) => dispatch => {
-    axios.post('/api/users/login', user)
+    axios.post( LOGIN , user)
             .then(res => {
                 console.log(res)
                 const { token } = res.data;

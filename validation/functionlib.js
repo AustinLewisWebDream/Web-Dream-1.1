@@ -8,8 +8,6 @@ const hash = crypto.createHmac('sha256', 'a secret').update('I love cupcakes').d
 const jwt = require('jsonwebtoken');
 const options = require('../config');
 const totp = require ('otplib/totp');
-const authenticator = require('otplib/authenticator');
-
 
 
 totp.options = { crypto };

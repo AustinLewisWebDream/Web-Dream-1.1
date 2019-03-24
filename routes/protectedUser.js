@@ -7,6 +7,9 @@ const middleware = require('../lib/middleware');
 
 var User = mongoose.model('users');
 const Quote = require('../db/models/quote');
+const Service = require('../db/models/service');
+const Subscription = require('../db/models/subscriptions')
+const PromoCode = require('../db/models/promocodes');
 
 const promises = require('../validation/functionlib');
 const userFunctions = require ('../lib/UserFunctions');
@@ -111,26 +114,41 @@ router.post('/payment-method/remove', middleware.verify, async (req, res) => {
     }
 });
 
-router.post('/subscription/add', middleware.verify, async (req, res) => {
-    try {
-        const user = await User.findById(req.body.id);
-        const subscription = await subscriptionFunctions.getSubscription(req.body.type, req.body.name);
-        const updatedSubscriptions = await userFunctions.pushSubscriptionToAccount(user, subscription);
-        const updatedMonthlyRate = await userFunctions.getMonthlyRate(user);
-        const stripePayment = await stripeFunctions.processStripePayment(user.stripeData.id, subscription.monthly);
 
-        const newService = {
-            name: subscription.name,
-            price: subscription.monthly,
+router.post('/subscription/add', middleware.verify, async (req, res) => {
+    var invoiceItems = [];
+    try {
+        // Find user and subscription
+        const user = await User.findById(req.body.id);
+        const subscription = await Subscription.findOne({name: req.body.name});
+
+        // Create new service and add to the user's account
+        const service = new Service({subscription: subscription._id, renewDate: new Date(), renewCycle: req.body.cycle}) 
+        user.subscriptions.push(service);
+
+        invoiceItems.push({name: subscription.name, price: await service.getRawTotal()});
+        
+        // If the user used a discount, push discount to invoice items
+        if(req.body.promo !== '' && req.body.promo !== undefined){
+            invoiceItems.push({name: req.body.promo, price: await service.getPromoDiscount(req.body.promo)});
         }
 
-        const invoice = await invoiceFunctions.generateInvoice(subscription.name, [newService], true, new Date())
+        const amount = await service.calculateCharge(req.body.promo);
+
+        // Charge the user
+        await user.makePayment(amount);
+
+        await service.setNextRenewDate();
+
+        // Create an invoice
+        const invoice = await invoiceFunctions.generateInvoice(invoiceItems, true, new Date());
+        user.invoices.push(invoice);
+
+        // Send email to user with invoice
         await mailer.sendReceipt(user.email, invoice)
 
-        user.invoices.push(invoice);
-        user.subscriptions = updatedSubscriptions;
-        user.monthlyRate = updatedMonthlyRate;
-
+        // Save and send user
+        user.markModified('subscriptions')
         const savedUser = await user.save();
         const payload = await promises.stripUserForResolve(savedUser);
         const token = await promises.genJWT(payload);
@@ -166,7 +184,6 @@ router.post('/pay-invoice', middleware.verify, async (req, res) => {
         const paidInvoice = await invoiceFunctions.markPaid(invoiceToBePaid);
 
         await mailer.sendReceipt(invoice, email)
-
         const newInvoicesList = await invoiceFunctions.findAndReplaceInvoice(invoices, invoiceToBePaid, paidInvoice)
         user.invoices = newInvoicesList;
         user.markModified('invoices')
@@ -195,5 +212,42 @@ router.post('/quote/add', middleware.verify, async (req, res) => {
     }
 });
 
+router.post('/verify-promo', async (req, res) => {
+    try{
+        const promoCode = await PromoCode.findOne({code: req.body.code})
+        console.log(promoCode)
+        if(!promoCode) {
+            return res.status(400).json({data: 'Promo code has expired or could not be found'});
+        }
+        return res.status(200).json({data: promoCode});
+    } catch(error) {
+        console.log(error)
+        res.status(500).json({data: 'Internal server error'})
+    }
+});
+
+router.post('/quote/accept', middleware.verify, async (req, res) => {
+    var invoiceItems = [];
+    try{
+        var user = await User.findById(req.body.id)
+        var newQuote = await user.findQuoteById(req.body.quoteID);
+        newQuote.status = 'Accepted';
+        
+        user.quotes = await user.findAndReplaceQuote(req.body.quoteID, newQuote);
+        user.markModified('quotes')
+        invoiceItems.push({name: 'Development Services', price: newQuote.price});
+        const invoice = await invoiceFunctions.generateInvoice(invoiceItems, false, new Date());
+        user.invoices.push(invoice);
+        // TODO: Generate promo code based on invoice number
+        const savedUser = await user.save();
+        const payload = await promises.stripUserForResolve(savedUser);
+        console.log(savedUser);
+        const token = await promises.genJWT(payload);
+        res.json(token);
+    } catch(err) {
+        console.log(err)
+        res.status(500)
+    }
+});
 
 module.exports = router

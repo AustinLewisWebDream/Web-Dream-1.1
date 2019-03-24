@@ -24,6 +24,8 @@ import GetHosting from './components/get-hosting/get-hosting';
 import Quote from './components/inquiry-routes/quote';
 import LoginPage from './components/loginpage';
 import PasswordRecovery from './components/passwordrecover';
+import AdminRoute from './components/AdminRoute';
+import AdminIndex from './components/admin/index';
 
 
 
@@ -47,7 +49,12 @@ class App extends Component {
       <Provider store={ store } >
       <BrowserRouter>        
         <div>
+
+          <Switch>
+            <AdminRoute exact path='/admin' component={AdminIndex} />
             <Navbar></Navbar>
+          </Switch>
+
           <Switch>
             <Route exact path='/' component={ Home } exact />
             <Route path='/hosting' component={ Hosting } />
@@ -58,9 +65,15 @@ class App extends Component {
             <Route path='/get-hosting' component={ GetHosting } />
             <Route path='/recover' component={ PasswordRecovery } />
             <AuthRoute path='/account' component={ Account } />
+            
+          </Switch>
+
+          <Switch>
+            <AdminRoute exact path='/admin' />
+            <Footer />
             <Route component={ Error } />
           </Switch>
-          <Footer />
+          
         </div>
       </BrowserRouter>
       </Provider>

@@ -1,0 +1,63 @@
+
+.admin-page {
+    display: flex;
+}
+
+.admin-page div {
+    padding: 1rem;
+}
+
+.content , .nav {
+    border: 3px solid black;
+}
+
+.content {
+    width: 75%;
+}
+
+.nav {
+    width: 25%;
+    height: 96vh;
+    position: sticky;
+    top: 0;
+    position: webkit-sticky;
+}
+
+.admin-nav-list {
+    text-align: center;
+    padding: 0;
+}
+
+.admin-nav-list li {
+    list-style: none;
+    display: block;
+    font-size: 1.2rem;
+    border: 2px solid black;
+}
+
+.customer {
+    border: solid black thin;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.customer:hover {
+    background-color: lightblue;
+    cursor: pointer;
+}
+
+.customer-expanded {
+
+}
+
+.quote {
+    border: solid black thin;
+
+}
+
+.quote-control-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+

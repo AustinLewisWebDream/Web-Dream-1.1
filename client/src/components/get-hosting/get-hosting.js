@@ -4,14 +4,13 @@ import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 
 import Message from '../notification/message';
-import Invoice from '../invoice';
-import CardForm from '../payment/cardform';
-import PaymentMethods from '../payment/paymentMethods';
-import { ADD_SUBSCRIPTION } from '../../routes';
+
 import { updateCurrentUser } from '../../actions/authentication';
 import { setRegisterWindow } from '../../actions';
 import isEmpty from '../../validation/is-empty';
 import PopUp from '../popup/popup'
+import Item from '../../objects/item';
+import CheckoutPage from './checkoutpage';
 
 import './get-hosting.css'
 
@@ -21,18 +20,17 @@ class GetHosting extends Component {
         this.state = {
             slideNum: 1,
             error: [],
-            hostingPlan: null,
+            hostingPlan: 'Starter',
+            billingCycle: 'Annually',
+            promoCode: '',
+            promoCodeMessage: [],
+            promotionObject: null,
+            invoiceItems: [new Item('Starter', 'Annually')]
+
         }
         this.onSlideTransition = this.onSlideTransition.bind(this);
     }
     render() {
-        const invoiceItems = [
-            {
-                name: this.state.hostingPlan,
-                price: getHostingPrice(this.state.hostingPlan)
-            }
-        ]
-
         const chooseHosting = (
             <TransitionContent title={'Hosting Plans'}>
                     <div className='qd-3-grid'>
@@ -90,21 +88,13 @@ class GetHosting extends Component {
         )
 
         const checkout = (
-            <TransitionContent>
-                <div className='checkout-page'>
-                    <div>
-                        <h3>Choose a payment method</h3>
-                        <div class='grid-segment-3'>
-                            <p>Payment methods</p>
-                            <PaymentMethods></PaymentMethods>
-                            <CardForm></CardForm>
-                        </div>
-                        <button onClick={e => this.onSubmit(e)} className='block-btn green'>Submit</button>
-                    </div>
-                    <div className='checkout-invoice'>
-                        <Invoice items={invoiceItems}></Invoice>
-                    </div>
-                </div>
+            <TransitionContent title={'Checkout'}>
+                <CheckoutPage 
+                    invoiceItems={this.state.invoiceItems} 
+                    userID={this.props.userID} 
+                    nextSlide={e => this.nextSlide(e)}
+                    billingCycle={this.state.billingCycle}
+                />
             </TransitionContent>
         )
 
@@ -147,7 +137,6 @@ class GetHosting extends Component {
                 <p>We are happy to help! Just contact austin@webdreamtech.com</p>
             </div>
             </React.Fragment>
-            
         )
     }
     componentWillMount() {
@@ -155,83 +144,27 @@ class GetHosting extends Component {
             this.props.setRegisterWindow(true);
         }
     }
-
     onSlideTransition(e) {
         this.setState({ slideNum: this.state.slideNum + Number(e.target.value) })
     }
-    onTypeSelect(name) {
-        this.setState({ hostingPlan: name })
+    onTypeSelect = name => {
+        this.setState({ 
+            hostingPlan: name,
+            invoiceItems: [new Item(name, this.state.billingCycle)],
+        }, () => {
+            console.log(this.state)
+        })
     }
-    onSubmit = async () => {
-        if(isEmpty(this.props.userID)) {
-            this.props.setRegisterWindow(true);
-            return;
-        }
-
-        try {
-            const errors = await checkErrors(this.state, this.props.userID, this.props.paymentMethods);
-            const res = await fetch(ADD_SUBSCRIPTION, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'authorization': localStorage.getItem('jwtToken')
-                },
-                    body: JSON.stringify({
-                        id: this.props.userID,
-                        type: 'hosting',
-                        name: this.state.hostingPlan
-                    })
-            })
-            if(res.status == 200) {
-                const json = await res.json();
-                this.props.updateCurrentUser(json)
-                this.setState({slideNum: this.state.slideNum + 1});
-            }
-            
-        } catch (err) {
-            this.setState({
-                error: true,
-                message: err
-            });
-        }
+    handleChange = name => event => {
+        this.setState({
+          [name]: event.target.value,
+        });
+    };
+    nextSlide = e => {
+        this.setState({slideNum: this.state.slideNum + 1});
     }
 }
 
-const getHostingPrice = name => {
-    if(name === 'Starter') {
-        return 4;
-    }
-    if(name === 'Business') {
-        return 8;
-    }
-    if(name === 'Hyper') {
-        return 15;
-    } else {
-        return 0;
-    }
-}
-
-function checkErrors(state, user, methods) {
-    return new Promise((resolve, reject) => {
-        var message = [];
-        if(!user) {
-            message.push('Please register to checkout');
-        }
-        if(!methods) {
-            message.push('Please add a payment method');
-        }
-        if(!state.hostingPlan) {
-            message.push('Please choose a hosting plan');
-        }
-        if (message.length === 0) {
-            resolve()
-        }
-        else {
-            reject(message)
-        }
-    })
-} 
 function mapStateToProps(state) {
     return {
         user: state.auth.user,

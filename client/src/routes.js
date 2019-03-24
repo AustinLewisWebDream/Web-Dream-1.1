@@ -1,6 +1,8 @@
-const URL = 'https://www.webdreamtech.com'
+const URL = 'http://localhost:5000'
 
 export const REMOVE_PAYMENT_METHOD = URL + '/api/user/payment-method/remove';
+
+export const LOGIN = URL + '/api/users/login';
 
 export const ADD_PAYMENT_METHOD = URL + '/api/user/payment-method/add';
 
@@ -22,4 +24,8 @@ export const UPDATE_EMAIL = URL + '/api/user/reset-email';
 
 export const PASSWORD_RECOVER = URL + '/api/users/recover-password';
 
-export const PASSWORD_RESET = URL + '/api/users/verify-token'
+export const PASSWORD_RESET = URL + '/api/users/verify-token';
+
+export const VERIFY_PROMO = URL + '/api/user/verify-promo';
+
+export const ACCEPT_QUOTE = URL + '/api/user/quote/accept';

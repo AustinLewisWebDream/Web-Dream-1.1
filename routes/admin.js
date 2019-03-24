@@ -4,8 +4,15 @@ const mongoose = require('mongoose');
 
 var User = mongoose.model('users');
 var Sub = require('../db/models/subscriptions')
-const nodeJobs = require('../lib/NodeCron');
+var Quote = require('../db/models/quote');
 
+const nodeJobs = require('../lib/NodeCron');
+const PromoCode = require('../db/models/promocodes');
+
+const middleware = require('../lib/middleware');
+
+
+// TODO: Fix authentication for admin routes
 
 var now = new Date();
 const fakeService = {
@@ -14,12 +21,13 @@ const fakeService = {
     dueDate: new Date(now.getFullYear(), now.getMonth(), now.getDate())
 }
 
-
+router.post('/promocode/create' , async (req, res) => {
+    const newPromo = await PromoCode.create({code: req.body.code, description: req.body.description, rate: req.body.rate, reccuring: Boolean(req.body.reccuring) })
+    res.status(200).json({data: newPromo});
+});
 
 
 router.post('/subscription/create', (req, res) => {
-    console.log('Subscription About to be added')
-    console.log(req.body)
     let newSub = new Sub({
         type: req.body.type,
         name: req.body.name,
@@ -65,11 +73,45 @@ router.post('/genfakeservices', async (req, res) => {
     res.json(savedMe);
 });
 
-
 router.post('/scheduleJob', (req, res) => {
     nodeJobs.scheduleInvoiceGeneration();
     console.log('Job was scheduled');
     res.sendStatus(200);
 })
+
+
+// START FULLY IMPLEMENTED ROUTES --------------------------
+
+const verifyAdmin = (req, res, next) => {
+    if(req.body.adminEmail != 'opticsillusion@live.com') {
+        return res.status(403);
+    } else {
+        next();
+    }
+}
+
+router.post('/authenticate', async (req, res) => {
+    return res.status(200).json({isAdmin: true});
+})
+
+router.post('/get-users', async (req, res) => {
+    try {
+        const users = await User.find({});
+        return res.status(200).json(users);
+    } catch (error) {
+        console.log(error);
+        res.status(500);
+    }
+})
+
+router.post('/update-customer/quote', async (req, res) => {
+    var customer = await User.findById(req.body.customerID);
+    let newQuotesList = await customer.findQuoteByIdAndUpdate(req.body.id, req.body.updated);
+    customer.quotes = newQuotesList;
+    customer.markModified('quotes')
+    await customer.save();
+    res.sendStatus(200);
+})
+
 
 module.exports = router;

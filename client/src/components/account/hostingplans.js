@@ -21,8 +21,7 @@ class HostingPlans extends Component {
                                 <p className='standard'>${subscription.subscription.monthly}</p>
                                 <p className='good'>Online</p>
                                 <p className='standard'>{date}th</p>
-                                {/* <p onClick={e => this.manageHosting(subscription.subscription.name, subscription.renewDate)} className='standard manage-hosting-link'>Manage<img src='/images/icons/carrot-down.png' alt='Open Manage Menu Button' className='dropdown-carrot' /></p> */}
-
+                                {/* TODO: <p onClick={e => this.manageHosting(subscription.subscription.name, subscription.renewDate)} className='standard manage-hosting-link'>Manage<img src='/images/icons/carrot-down.png' alt='Open Manage Menu Button' className='dropdown-carrot' /></p> */}
                             </div>
                         </div>
                     </React.Fragment>

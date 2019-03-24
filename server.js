@@ -9,6 +9,7 @@ const config = require('./db/db');
 const cors = require('cors');
 const app = express();
 const jobs = require('./lib/NodeCron');
+const referrerPolicy = require('referrer-policy');
 
 // Routes
 const users       = require('./routes/user'); 
@@ -16,14 +17,30 @@ const quotes      = require('./routes/quote');
 const admin       = require('./routes/admin');
 const privateUser = require('./routes/protectedUser');
 
-// MongoDB Error logging
+// // MongoDB Error logging
 mongoose.connect(config.DB, { useNewUrlParser: true }).then(
   () => {console.log('Database is connected') },
   err => { console.log('Cannot connect to the database'+ err)}
 );
 
-// Required to communicate from font-end to back-end
-app.use(cors());
+// app.use(referrerPolicy())
+
+// // Required to communicate from font-end to back-end
+var corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors(corsOptions));
+
+// Must set the Access-Control-Allow-Headers or API will fail in chrome
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', '*')
+//   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Origin, X-Requested-With, Content-Type, Accept' )
+//   res.setHeader('Access-Control-Request-Header', 'content-type');
+//   next();
+// });
+
+
 
 // Initialize passport
 app.use(passport.initialize());
@@ -34,7 +51,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Automatically processes invoices and payments on a schedule
-jobs.scheduleInvoiceGeneration();
+//jobs.scheduleInvoiceGeneration();
 
 // Static image serving for emails
 app.use('/api/static/images', express.static('public/images'))

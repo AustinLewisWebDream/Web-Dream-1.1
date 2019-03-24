@@ -3,6 +3,7 @@ import TransitionContent from './CSSTransition';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 
+import { setRegisterWindow } from '../../actions';
 import { updateCurrentUser } from '../../actions/authentication';
 import { ADD_QUOTE } from '../../routes';
 import TextField from '@material-ui/core/TextField';
@@ -290,4 +291,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, { updateCurrentUser } )(Quote);
+export default connect(mapStateToProps, { updateCurrentUser, setRegisterWindow } )(Quote);

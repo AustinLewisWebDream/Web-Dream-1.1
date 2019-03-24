@@ -10,7 +10,8 @@ const QuoteSchema = new Schema({
     goals: String,
     similarWebsites: String,
     notes: String,
-    date: Date
+    date: Date,
+    price: Number
 });
 
 const Quote = mongoose.model('quote', QuoteSchema);
