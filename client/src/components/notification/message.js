@@ -11,22 +11,21 @@ class Message extends Component {
 
         }
     }
+
     render() {
-        var messages = this.props.list;
-
-        if(this.props.errors) {
-            messages = this.props.list.concat(this.props.errors)
+        var messages = []
+        if(this.props.list.length || this.props.errors.length) {
+            messages = messages.concat(this.props.list);
         }
-
-        const messageList = messages.map(message => {
+        var messageList = messages.map(message => {
             return (
                 <React.Fragment>
                     <p>{message}</p>
                 </React.Fragment>
             )
         })
-        
-        if(!this.props.errors && !this.props.list) {
+        console.log(messages)
+        if(messages.length == 0) {
             return(
                 null
             )

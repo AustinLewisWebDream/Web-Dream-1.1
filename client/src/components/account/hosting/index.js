@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 
 import HostingPlans from '../hostingplans';
-import MonthlyRate from '../monthlyrate';
+import Rate from '../monthlyrate';
 
 class HostingPage extends Component {
     render() {
@@ -11,7 +11,7 @@ class HostingPage extends Component {
                 <React.Fragment>
                     <div className='account-hosting-grid'>
                         <div>
-                            <MonthlyRate rate={this.props.rate} />
+                            <Rate rate={this.props.rate} />
                         </div>
                         <div>
                             <HostingPlans />
@@ -29,6 +29,7 @@ class HostingPage extends Component {
             )
         }
     }
+
 }
 
 const mapStateToProps = (state) => {

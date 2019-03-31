@@ -44,14 +44,35 @@ class AdminIndex extends Component {
         }
     }
     async checkIfAdmin() {
-        const isAdmin = await Axios.post(AUTHENTICATE_ADMIN, {email: this.props.adminEmail}, {headers: { 'authorization': localStorage.getItem('jwtToken')}})
+        const response = await fetch(RETRIEVE_USERS, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('jwtToken')
+            },
+            body: JSON.stringify({
+                email: this.props.adminEmail
+            })
+        })
+        let isAdmin = await response.json();
         return isAdmin
     }
     async getAllUsersAndSetState() {
-        console.log('Getting users')
         try {
-            const response = await Axios.post(RETRIEVE_USERS, {email: this.props.adminEmail}, {headers: { 'authorization': localStorage.getItem('jwtToken') }})
-            this.setState({ users : response.data })
+            const response = await fetch(RETRIEVE_USERS, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'authorization': localStorage.getItem('jwtToken')
+                },
+                body: JSON.stringify({
+                    email: this.props.adminEmail
+                })
+            })
+            let users = await response.json();
+            this.setState({ users })
         } catch (err) {
             console.log(err)
         }

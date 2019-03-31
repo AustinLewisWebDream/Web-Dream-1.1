@@ -9,10 +9,10 @@ import { updateCurrentUser } from '../../actions/authentication';
 import { setRegisterWindow } from '../../actions';
 import isEmpty from '../../validation/is-empty';
 import PopUp from '../popup/popup'
-import Item from '../../objects/item';
 import CheckoutPage from './checkoutpage';
 
 import './get-hosting.css'
+import HostingPlan from '../../objects/hostingplans';
 
 class GetHosting extends Component {
     constructor(props) {
@@ -25,7 +25,7 @@ class GetHosting extends Component {
             promoCode: '',
             promoCodeMessage: [],
             promotionObject: null,
-            invoiceItems: [new Item('Starter', 'Annually')]
+            invoiceItems: [new HostingPlan('Starter', 'Annually')]
 
         }
         this.onSlideTransition = this.onSlideTransition.bind(this);
@@ -150,7 +150,7 @@ class GetHosting extends Component {
     onTypeSelect = name => {
         this.setState({ 
             hostingPlan: name,
-            invoiceItems: [new Item(name, this.state.billingCycle)],
+            invoiceItems: [new HostingPlan(name, this.state.billingCycle)],
         }, () => {
             console.log(this.state)
         })

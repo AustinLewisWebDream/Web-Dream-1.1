@@ -9,13 +9,8 @@ const config = require('./db/db');
 const cors = require('cors');
 const app = express();
 const jobs = require('./lib/NodeCron');
-const referrerPolicy = require('referrer-policy');
 
-// Routes
-const users       = require('./routes/user'); 
-const quotes      = require('./routes/quote');
-const admin       = require('./routes/admin');
-const privateUser = require('./routes/protectedUser');
+
 
 // // MongoDB Error logging
 mongoose.connect(config.DB, { useNewUrlParser: true }).then(
@@ -23,24 +18,25 @@ mongoose.connect(config.DB, { useNewUrlParser: true }).then(
   err => { console.log('Cannot connect to the database'+ err)}
 );
 
-// app.use(referrerPolicy())
 
-// // Required to communicate from font-end to back-end
+
+// Required to communicate from font-end to back-end
 var corsOptions = {
   origin: 'http://localhost:3000',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
-app.use(cors(corsOptions));
-
-// Must set the Access-Control-Allow-Headers or API will fail in chrome
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', '*')
-//   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Origin, X-Requested-With, Content-Type, Accept' )
-//   res.setHeader('Access-Control-Request-Header', 'content-type');
-//   next();
-// });
+app.options('*', cors());
 
 
+
+// Routes
+const users       = require('./routes/user'); 
+const quotes      = require('./routes/quote');
+const admin       = require('./routes/admin');
+const privateUser = require('./routes/protectedUser');
+
+
+// const plans = require('./hostingPlans');
 
 // Initialize passport
 app.use(passport.initialize());

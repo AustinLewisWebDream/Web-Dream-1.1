@@ -38,7 +38,8 @@
 .customer {
     border: solid black thin;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 1rem;
 }
 
 .customer:hover {
@@ -57,7 +58,13 @@
 
 .quote-control-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.admin-warning {
+    text-align: center;
+    font-weight: bold;
+    border-radius: 10px;
 }
 
 

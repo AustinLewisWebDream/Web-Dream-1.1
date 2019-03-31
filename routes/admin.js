@@ -90,11 +90,12 @@ const verifyAdmin = (req, res, next) => {
     }
 }
 
-router.post('/authenticate', async (req, res) => {
+router.post('/authenticate', middleware.verify, async (req, res) => {
     return res.status(200).json({isAdmin: true});
 })
 
-router.post('/get-users', async (req, res) => {
+router.post('/get-users', middleware.verify, async (req, res) => {
+    console.log("This route was hit")
     try {
         const users = await User.find({});
         return res.status(200).json(users);
@@ -112,6 +113,5 @@ router.post('/update-customer/quote', async (req, res) => {
     await customer.save();
     res.sendStatus(200);
 })
-
 
 module.exports = router;

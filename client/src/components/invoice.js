@@ -2,50 +2,28 @@ import React, { Component } from 'react';
 
 class Invoice extends Component {
     render() {
-
-        const total = getTotal(this.props.items);
-        const discount = total.subtotal - total.final
-        
         const printItem = item => {
             return (
                 <div key={item.name} className='reg-two-grid'>
-                    <p key={item.name}>{item.name} Hosting - Renews {item.cycle}</p>
+                    <p key={item.name}>{item.name} - {item.description}</p>
                     <div className='align-right'>
-                        <p>${item.total().toFixed(2)}</p>
+                        <p>${item.price.toFixed(2)}</p>
                     </div>
                 </div>
             )
         }
-
-        const printDiscount = item => {
-            return(
-                <div key={discount.name} className='reg-two-grid'>
-                <p key={item.name}>{item.name} - {item.rate * 100}% off total order</p>
-                <div className='align-right'>
-                    <p>${item.total().toFixed(2)}</p>
-                </div>
-            </div>
-            )
-        }
-
-        const items = this.props.items.map((item) => 
-            <React.Fragment>
-                {(!item.isDiscount()) ? printItem(item) : printDiscount(item)}
-            </React.Fragment>
-        );
-
         return(
             <React.Fragment>
                     <h2>Web Dream</h2>
                     <p>1550 Trent Blvd.</p>
                     <p>Lexington, Ky 40515</p>
-                    <hr></hr>
-                    {items}
+                    
+                    {this.props.items.map(item => printItem(item))}
                     <hr></hr>
                     <div className='align-right'>
-                        <p>Subtotal: <strong>${total.subtotal.toFixed(2)}</strong></p>
-                        <p>Discounts: <strong>$-{discount.toFixed(2)}</strong></p>
-                        <p>Total: <strong>${total.final.toFixed(2)}</strong></p>
+                        <p>Subtotal:  <strong>${getSubtotal(this.props.items)}</strong></p>
+                        <p>Discounts: <strong>$-{getDiscount(this.props.items).toFixed(2)}</strong></p>
+                        <p>Total:     <strong>${getTotal(this.props.items).toFixed(2)}</strong></p>
                     </div>
             </React.Fragment>
 
@@ -54,18 +32,34 @@ class Invoice extends Component {
 }
 
 const getTotal = items => {
-    var total = 0; 
-    var subtotal = 0;
-    for(var i = 0; i < items.length; i++) {
-        console.log(items[i])
-        if(items[i].isDiscount()){
-            total += items[i].discountedTotal();
-            continue;
+    const prices = items.map(item => item.price);
+    return prices.reduce((partial_sum, a) => partial_sum + a);
+}
+
+const getSubtotal = items => {
+    const prices = items.map(item => {
+        if(!isDiscount(item)) {
+            return item.price
         }
-        total += items[i].discountedTotal();
-        subtotal += items[i].total();
-    }
-    return {final: total, subtotal};
+    });
+    console.clear();
+    return prices.reduce((partial_sum, a) => partial_sum + a);
+}
+
+const getDiscount = items => {
+    const prices = items.map(item => {
+        console.log(item)
+        if(isDiscount(item)) {
+
+            return item.price
+        }
+    });
+    console.log(prices)
+    return prices.reduce((partial_sum, a) => partial_sum + a);
+}
+
+const isDiscount = item => {
+    return item.price < 0
 }
 
 export default Invoice

@@ -67,14 +67,14 @@ class QuotesList extends Component {
                 return (
                     <React.Fragment>
                     <div key={quote._id} className='quote-container'>
-                    <div className='quote-container-grid'>
-                        <p>Status: <span className='good'>{quote.status}</span></p>
-                        <p>Quote Date: <span className='good'>{date}</span></p>
-                        <div></div>
-                        <div>
-                            <p onClick={e => this.expandQuote(quote._id)} className='standard manage-hosting-link'>Expand<img src='/images/icons/carrot-down.png' alt='Open Manage Menu Button' className='dropdown-carrot' /></p>
+                        <div className='quote-container-grid'>
+                            <p>Status: <span className='good'>{quote.status}</span></p>
+                            <p>Quote Date: <span className='good'>{date}</span></p>
+                            <div></div>
+                            <div>
+                                <p onClick={e => this.expandQuote(quote._id)} className='standard manage-hosting-link'>Expand<img src='/images/icons/carrot-down.png' alt='Open Manage Menu Button' className='dropdown-carrot' /></p>
+                            </div>
                         </div>
-                    </div>
                         {manageQuote}
                         {this.state.displayedQuoteID == quote._id ? showMore : null}
                     </div>

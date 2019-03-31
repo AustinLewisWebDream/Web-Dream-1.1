@@ -29,3 +29,9 @@ export const PASSWORD_RESET = URL + '/api/users/verify-token';
 export const VERIFY_PROMO = URL + '/api/user/verify-promo';
 
 export const ACCEPT_QUOTE = URL + '/api/user/quote/accept';
+
+export const GET_USER = URL + '/api/user/get-account';
+
+export const GET_PLAN_FROM_ID = URL + '/api/user/get-subscription-by-id';
+
+export const GET_USER_PROMO = URL + '/api/user/verify-user-specific-promo'

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MonthlyRate = (props) => {
+const Rate = (props) => {
     if(props.rate) {
         return (
             <React.Fragment>
@@ -15,4 +15,4 @@ const MonthlyRate = (props) => {
     }
 }
 
-export default MonthlyRate
+export default Rate

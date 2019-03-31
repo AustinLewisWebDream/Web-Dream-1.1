@@ -9,12 +9,11 @@ import Message from '../notification/message';
 import isEmpty from '../../validation/is-empty';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import Item from '../../objects/item';
 import Discount from '../../objects/discount';
-import Axios from 'axios';
-import qs from 'qs'
-import { ADD_SUBSCRIPTION, VERIFY_PROMO } from '../../routes';
+import axios from 'axios';
+import { ADD_SUBSCRIPTION, VERIFY_PROMO, GET_USER_PROMO } from '../../routes';
 import { setRegisterWindow } from '../../actions'
+import HostingPlan from '../../objects/hostingplans';
 
 const styles = theme => ({
     container: {
@@ -126,6 +125,40 @@ class CheckoutPage extends Component{
         </React.Fragment>
         )
     }
+    async componentWillMount() {
+        if(this.state.usedPromo)
+        return;
+    try {
+        const response = await fetch(GET_USER_PROMO, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: await JSON.stringify({
+                id: this.props.id
+            })
+        })
+        const promoCode = await response.json();
+        if(response.status != 200) 
+            return
+        const amountToDiscount = this.state.invoiceItems[0].discountedTotal();
+        const discountItem = new Discount(promoCode.data.code, promoCode.data.rate, amountToDiscount);
+        const newInvoiceItems = this.state.invoiceItems
+        newInvoiceItems.push(discountItem);
+        this.setState({
+            promoCode: promoCode.data.code,
+            usedPromo : true,
+            invoiceItems : newInvoiceItems,
+            errors: []
+        }, () => {
+            console.log(this.state.invoiceItems[1].total())
+        })
+    } catch (error) {
+        console.log(error)
+    }
+    }
+
     handleChange = name => event => {
         this.setState({
           [name]: event.target.value,
@@ -136,7 +169,7 @@ class CheckoutPage extends Component{
             billingCycle: event.target.value
         }, () => {
             let newInvoiceItems = this.state.invoiceItems;
-            newInvoiceItems[0] = new Item(this.state.invoiceItems[0].name, event.target.value); 
+            newInvoiceItems[0] = new HostingPlan(this.state.invoiceItems[0].name, event.target.value); 
             if(newInvoiceItems.length > 1) {
                 this.state.invoiceItems[1].amount = newInvoiceItems[0].discountedTotal()
             }
@@ -147,15 +180,24 @@ class CheckoutPage extends Component{
         )
     }
     verifyPromo = async () => {
-
         if(this.state.usedPromo)
             return;
         try {
-            let code = {code: this.state.promoCode};
-            const promoCode = await Axios.post('http://localhost:5000/api/user/verify-promo', {code: 'testcode'})
-
+            const response = await fetch(VERIFY_PROMO, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    code: this.state.promoCode
+                })
+            })
+            const promoCode = await response.json();
+            if(response.status != 200) 
+                throw promoCode
             const amountToDiscount = this.state.invoiceItems[0].discountedTotal();
-            const discountItem = new Discount(this.state.promoCode, promoCode.data.data.rate, amountToDiscount);
+            const discountItem = new Discount(this.state.promoCode, promoCode.data.rate, amountToDiscount);
             const newInvoiceItems = this.state.invoiceItems
             newInvoiceItems.push(discountItem);
             this.setState({
@@ -172,20 +214,20 @@ class CheckoutPage extends Component{
         }
     }
     onSubmit = async () => {
-        if(isEmpty(this.props.userID)) {
+        if(isEmpty(this.props.id)) {
             this.props.setRegisterWindow(true);
             return;
         }
         try {
-            const requestBody = {
-                id: this.props.userID,
+            let body = {
+                id: this.props.id,
                 type: 'hosting',
                 name: this.state.invoiceItems[0].name,
                 cycle: this.state.billingCycle,
                 promo: this.state.promoCode
             }
-            const response = await Axios.post(ADD_SUBSCRIPTION, requestBody, {'authorization' : localStorage.getItem('jwtToken')})
-            console.log(response);
+            await axios.post(ADD_SUBSCRIPTION, body, {'Authorization' : localStorage.getItem('jwtToken')})
+            this.props.nextSlide();
         } catch (err) {
             console.log(err)
             this.setState({
@@ -214,7 +256,7 @@ CheckoutPage.propTypes = {
 
 const mapStateToProps = (state) => {
     return {
-
+        id: state.auth.user.id
     }
 }
 
