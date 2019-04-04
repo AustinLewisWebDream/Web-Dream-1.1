@@ -17,6 +17,7 @@ const stripeFunctions = require('../lib/StripeFunctions');
 const invoiceFunctions = require('../lib/InvoiceFunctions');
 const secure = require('../encryption');
 const mailer = require('../lib/MailFunctions');
+const HostingPlan = require('../lib/hostingPlan').default;
 
 router.post('/reset-password', middleware.verify, async (req, res) => {
     try {
@@ -31,8 +32,8 @@ router.post('/reset-password', middleware.verify, async (req, res) => {
 
         const savedUser = await user.save()
         const payload = await promises.stripUserForResolve(savedUser)
-        const token = await promises.genJWT(payload);
-        res.json(token);
+
+        res.json(payload);
     } catch (error) {
         console.log(error)
         res.sendStatus(500);
@@ -49,8 +50,8 @@ router.post('/reset-email', middleware.verify, async (req, res) => {
         user.email = req.body.email
         const savedUser = await user.save()
         const payload = await promises.stripUserForResolve(savedUser)
-        const token = await promises.genJWT(payload);
-        res.json(token);
+
+        res.json(payload);
     } catch (error) {
         console.log(error)
         res.status(500).json({data: 'Internal Server Error'})
@@ -60,15 +61,18 @@ router.post('/reset-email', middleware.verify, async (req, res) => {
 router.post('/get-account', middleware.verify, async (req, res) => {
     const user = await User.findById(req.body.id);
     const payload = promises.stripUserForResolve(user)
-    const token = await promises.genJWT(payload);
-    res.json(token);
+
+    res.json(payload);
 });
 router.post('/get-subscription-by-id', middleware.verify, async (req, res) => {
-    let subscriptions = await Subscription.find({_id: req.body.id})
+    let subscriptions = await Subscription.find({});
     return res.json(subscriptions);
 });
 
-router.post('/payment-method/add', async (req, res) => {
+// TODO: Updating the primary value does not work correctly
+// Primary methods not being removed if user has primary already
+// When updating stripe card, stripe is recieving card number as **************2334 as the number, should be actual card information
+router.post('/payment-method/add', middleware.verify, async (req, res) => {
     const newMethod = {number: req.body.number, exp_month: req.body.exp_month, exp_year: req.body.exp_year, cvc: req.body.cvc, primary: Boolean(req.body.makePrimary)}
     try {
         const user = await User.findById(req.body.id);
@@ -80,7 +84,9 @@ router.post('/payment-method/add', async (req, res) => {
         const newStripeCard = await stripeFunctions.addCustomerPaymentMethodToStripe(user.stripeData.id, newMethod)
 
         if(newMethod.primary) {
+
             user.paymentMethods = await userFunctions.removeOldPrimaryMethod(user.paymentMethods);
+            console.log(user.paymentMethods);
         }
         const encryptedCardNumber = secure.encrypt(newMethod.number);
         newMethod.number = encryptedCardNumber;
@@ -90,14 +96,15 @@ router.post('/payment-method/add', async (req, res) => {
         
         const savedUser = await user.save();
         const payload = promises.stripUserForResolve(savedUser)
-        const token = await promises.genJWT(payload);
-        res.json(token);
+
+        res.json(payload);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
     }
 });
 
+// TODO: Ensure this route actually deletes the payment method
 router.post('/payment-method/remove', middleware.verify, async (req, res) => {
     try {
         var user = await User.findById(req.body.id)
@@ -116,8 +123,8 @@ router.post('/payment-method/remove', middleware.verify, async (req, res) => {
         user.paymentMethods = newPaymentsList;
         const savedUser = await user.save();
         const payload = promises.stripUserForResolve(savedUser)
-        const token = await promises.genJWT(payload);
-        res.json(token);
+
+        res.json(payload);
     } catch (error) {
         console.log(error)
         return res.sendStatus(500);
@@ -136,45 +143,30 @@ router.post('/subscription/add', middleware.verify, async (req, res) => {
         const service = new Service({subscription: subscription._id, renewDate: new Date(), renewCycle: req.body.cycle}) 
         user.subscriptions.push(service);
 
-        invoiceItems.push({name: subscription.name, price: await service.getRawTotal(), cycle: req.body.cycle});
-        
-        // If the user used a discount, push discount to invoice items
-        var validPromo = false;
-        var amount;
-        if(req.body.promo !== '') {
-            console.log('Promo code was sent')
-            // Check if the promo code is valid
-            let promoCheck = await PromoCode.findOne({code: req.body.promo});
-            console.log(req.body.promo)
-            if(promoCheck != null) {
-                console.log('Promo code was not null: ', promoCheck)
+        let newPlan = new HostingPlan(req.body.name, req.body.cycle, 'Renews ' + req.body.cycle);
+        invoiceItems.push(newPlan.getInvoiceItem());
+        invoiceItems.push(newPlan.getDiscountItem());
 
+        // Check if user sent valid promo
+        let promoCheck = await PromoCode.findOne({code: req.body.promo});
+        if(promoCheck != null) {
 
-                invoiceItems.push({name: req.body.promo, price: await service.getPromoDiscount(req.body.promo)});
-                amount = await service.calculateCharge(req.body.promo);
-                // Remove promo Code if user specific
-                var allCodes = await PromoCode.find({});
-                for (var i = 0; i < allCodes.length; i++) {
-                    if(String(allCodes[i].ref[0]) == String(req.body.id)) {
-                        console.log('Promo Code Deleted')
-                        await PromoCode.findByIdAndDelete(allCodes[i]._id)
-                    }
-                }
-            } else {
-                console.log('Promo code was null')
-                amount = await service.calculateCharge();
+            const currentTotal = invoiceFunctions.getTotal(invoiceItems);
+            invoiceItems.push({name: req.body.promo, price: promoCheck.rate * currentTotal * -1, description:((( promoCheck.rate * -1 + 1) * 100).toFixed(0) + '% off' )});
+
+            // Remove promo Code if user specific
+            var allCodes = await PromoCode.find({});
+            for (var i = 0; i < allCodes.length; i++) {
+                if(String(allCodes[i].ref[0]) == String(req.body.id)) 
+                    await PromoCode.findByIdAndDelete(allCodes[i]._id)
             }
-        } else {
-            console.log('No Promo Sent')
-            amount = await service.calculateCharge(req.body.promo);
         }
 
         // Charge the user
-        await user.makePayment(amount);
+        await user.makePayment(invoiceFunctions.getTotal(invoiceItems));
 
         await service.setNextRenewDate();
 
-        // Create an invoice
         const invoice = await invoiceFunctions.generateInvoice(invoiceItems, true, new Date());
         user.invoices.push(invoice);
 
@@ -185,8 +177,8 @@ router.post('/subscription/add', middleware.verify, async (req, res) => {
         user.markModified('subscriptions')
         const savedUser = await user.save();
         const payload = await promises.stripUserForResolve(savedUser);
-        const token = await promises.genJWT(payload);
-        res.json(token);
+
+        res.json(payload);
     } catch (error) {
         console.log(error)
         res.sendStatus(500);
@@ -199,8 +191,8 @@ router.post('/auto-renew', middleware.verify, async (req, res) => {
         user.autoRenew = (Boolean(req.body.autoRenew))
         user = await user.save();
         const payload = await promises.stripUserForResolve(user);
-        const token = await promises.genJWT(payload);
-        res.json(token);
+
+        res.json(payload);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -215,27 +207,24 @@ router.post('/pay-invoice', middleware.verify, async (req, res) => {
 
         if(invoiceFunctions.isPaid(invoiceToBePaid)){
             const payload = await promises.stripUserForResolve(user);
-            const token = await promises.genJWT(payload);
-            return res.json(token);
+            return res.json(payload);
         }
 
         const payment = await stripeFunctions.processStripePayment(user.stripeData.id, invoiceToBePaid.total);
-        user.paymentHistory.push(payment);
+        
+        user.paymentHistory.push(payment)
         const paidInvoice = await invoiceFunctions.markPaid(invoiceToBePaid);
-
+        mailer.sendReceipt(paidInvoice, user.email)
         const newInvoicesList = await invoiceFunctions.findAndReplaceInvoice(invoices, invoiceToBePaid, paidInvoice)
         user.invoices = newInvoicesList;
         user.markModified('invoices')
         const savedUser = await user.save();
         const payload = await promises.stripUserForResolve(savedUser);
-        const token = await promises.genJWT(payload);
-        return res.json(token);
+        return res.json(payload);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
     }
-    // TODO: Fix the mailer
-    // await mailer.sendReceipt(invoice, email)
 });
 
 router.post('/quote/add', middleware.verify, async (req, res) => {
@@ -245,15 +234,14 @@ router.post('/quote/add', middleware.verify, async (req, res) => {
         user.quotes.push(quote)
         const savedUser = await user.save();
         const payload = await promises.stripUserForResolve(savedUser);
-        const token = await promises.genJWT(payload);
-        res.json(token);
+        res.json(payload);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
     }
 });
 
-router.post('/verify-user-specific-promo', async (req, res) => {
+router.post('/verify-user-specific-promo', middleware.verify, async (req, res) => {
     try{
         const allCodes = await PromoCode.find({});
 
@@ -273,7 +261,7 @@ router.post('/verify-user-specific-promo', async (req, res) => {
     }
 });
 
-router.post('/verify-promo', async (req, res) => {
+router.post('/verify-promo', middleware.verify, async (req, res) => {
     try{
         const promoCode = await PromoCode.findOne({code: req.body.code})
         if(!promoCode || promoCode == null) {
@@ -287,6 +275,7 @@ router.post('/verify-promo', async (req, res) => {
 });
 
 router.post('/quote/accept', middleware.verify, async (req, res) => {
+    // TODO: Fix invoice
     var invoiceItems = [];
     try{
         var user = await User.findById(req.body.id)
@@ -294,16 +283,15 @@ router.post('/quote/accept', middleware.verify, async (req, res) => {
         newQuote.status = 'Accepted';
         user.quotes = await user.findAndReplaceQuote(req.body.quoteID, newQuote);
         user.markModified('quotes')
-        invoiceItems.push({name: 'Development Services', price: newQuote.price});
+        invoiceItems.push({name: 'Development Services', price: newQuote.price, description: 'Quote #' + newQuote.shortID});
         const invoice = await invoiceFunctions.generateInvoice(invoiceItems, false, new Date());
         user.invoices.push(invoice);
-        let promo = await new PromoCode({code: req.body.quoteID, description: '50% off hosting with development services', rate: .5 })
+        let promo = await new PromoCode({code: newQuote.shortID, description: '50% off hosting with development services', rate: .5 })
         promo.ref.push(req.body.id);
         await promo.save();
         const savedUser = await user.save();
         const payload = await promises.stripUserForResolve(savedUser);
-        const token = await promises.genJWT(payload);
-        res.json(token);
+        res.json(payload);
     } catch(err) {
         console.log(err)
         res.status(500)

@@ -56,11 +56,11 @@ class Quote extends Component {
         updatedQuote.status = e.target.value
         let update = {
             customerID: this.props.customer._id,
-            id: this.props.quote._id,
+            quoteID: this.props.quote._id,
             updated: updatedQuote
         }
         try {
-            let res = await axios.post(UPDATE_CUSTOMER_QUOTE, update)
+            let res = await axios.post(UPDATE_CUSTOMER_QUOTE, update, {'authorization': localStorage.getItem('jwtToken')})
         } catch (error) {
             console.log(error)
         }

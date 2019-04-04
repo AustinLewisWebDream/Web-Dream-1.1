@@ -9,7 +9,7 @@ const config = require('./db/db');
 const cors = require('cors');
 const app = express();
 const jobs = require('./lib/NodeCron');
-
+const middleware = require('./lib/middleware');
 
 
 // // MongoDB Error logging
@@ -18,16 +18,12 @@ mongoose.connect(config.DB, { useNewUrlParser: true }).then(
   err => { console.log('Cannot connect to the database'+ err)}
 );
 
-
-
 // Required to communicate from font-end to back-end
 var corsOptions = {
   origin: 'http://localhost:3000',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 app.options('*', cors());
-
-
 
 // Routes
 const users       = require('./routes/user'); 

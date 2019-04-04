@@ -1,6 +1,8 @@
 export default class Item {
-    constructor(name) {
+    constructor(name, price, description) {
         this.name = name;
+        this.price = price;
+        this.description = description;
     }
     discountedTotal = () => { return this.amount }
     setTotal = (total) => { this.amount = Number(total) }

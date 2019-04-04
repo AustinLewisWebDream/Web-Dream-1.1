@@ -72,16 +72,14 @@ class HostingPlans extends Component {
 }
 
 const setHostingPlans = (updatedSubscriptions, plans) => {
+    console.log(plans)
     for(var i = 0; i < updatedSubscriptions.length; i++) {
         for(var j = 0; j < plans.length; j++) {
-            
             if(updatedSubscriptions[i].subscription == plans[j]._id) {
-                console.log(updatedSubscriptions[i].subscription + "  " + plans[j]._id)
                 updatedSubscriptions[i].name = plans[j].name;
             }
         }
     }
-    console.log(updatedSubscriptions)
     return updatedSubscriptions
 }
 

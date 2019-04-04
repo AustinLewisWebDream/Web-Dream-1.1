@@ -7,31 +7,57 @@ import isEmpty from '../../../validation/is-empty';
 import Message from '../../notification/message';
 import axios from 'axios';
 import { PAY_INVOICE } from '../../../routes';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+const styles = theme => ({
+    progress: {
+      margin: theme.spacing.unit * 2,
+    },
+  });
 
 class ExpandedInvoiceInfo extends Component {
     constructor() {
         super()
         this.state = {
             badResponse: false,
-            notifications: []
+            notifications: [],
+            loading: false,
+            paid: true
         }
     }
     render() {
-        console.log(this.props.invoice)
+        const { classes } = this.props;
         return(
             <React.Fragment>
                 <Invoice items={this.props.invoice.services}/>
-                {this.props.invoice.paid ? null : <PayInvoiceButton onClick={e => this.payInvoice(e, this.props.invoice.invoiceNumber)}/>}                        
+                {this.state.paid ? null : <PayInvoiceButton payInvoice={e => this.payInvoice(e, this.props.invoice.invoiceNumber)}/>}     
+                <div className='center'>
+                    {this.state.loading ? <CircularProgress className={classes.progress} /> : null}
+                </div>
                 <br></br>
                 {isEmpty(this.state.notifications) ? null : <Message type={this.state.badResponse ? 'bad' : 'good'} list={this.state.notifications} />}
             </React.Fragment>
         )
     }
+    componentWillMount() {
+        this.setState({
+            paid: this.props.invoice.paid
+        })
+    }
     payInvoice = async () => {
         try {
-            const data = axios.post(PAY_INVOICE, {id: this.props.invoice.id}, {'authorization' : localStorage.getItem('jwtToken')})
-            updateCurrentUser(data.token);
+            await this.setState({
+                loading: true,
+                paid: true
+            });
+            
+            const data = await axios.post(PAY_INVOICE, {invoiceID: this.props.invoice.invoiceNumber}, {'authorization' : localStorage.getItem('jwtToken')})
+            this.props.updateCurrentUser(data.data);
             this.setState({
+                paid: true,
+                loading: false,
                 badResponse: false,
                 notifications: ['Payment Recieved']
             });
@@ -39,14 +65,22 @@ class ExpandedInvoiceInfo extends Component {
             console.log(err)
             this.setState({
                 badResponse: true,
+                loading: false,
+                paid: false,
                 notifications: ['Payment was unable to be processed']
             });
         }
     }
 }
 
-const mapStateToProps = () => {
-    return
+ExpandedInvoiceInfo.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.auth
+    }
 }
 
-export default connect(mapStateToProps, {updateCurrentUser})(ExpandedInvoiceInfo)
+export default (connect(mapStateToProps, {updateCurrentUser})(withStyles(styles)(ExpandedInvoiceInfo)))

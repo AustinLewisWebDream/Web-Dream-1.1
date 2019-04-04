@@ -3,6 +3,7 @@ import {Route, BrowserRouter, Switch} from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './store';
 import jwt_decode from 'jwt-decode';
+
 import setAuthToken from './setAuthToken';
 import { setCurrentUser, logoutUser, setLoginWindow } from './actions/authentication';
 
@@ -33,7 +34,9 @@ import AdminIndex from './components/admin/index';
 if(localStorage.jwtToken) {
   setAuthToken(localStorage.jwtToken);
   const decoded = jwt_decode(localStorage.jwtToken);
-  store.dispatch(setCurrentUser(decoded));
+
+  const persistentUser = jwt_decode(localStorage.user);
+  store.dispatch(setCurrentUser(persistentUser));
 
   const currentTime = Date.now() / 1000;
   if(decoded.exp < currentTime) {

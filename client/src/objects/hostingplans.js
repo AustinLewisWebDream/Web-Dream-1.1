@@ -9,8 +9,9 @@ const BUSINESS_PRICE = 8;
 const HYPER_PRICE = 15;
 
 export default class HostingPlan extends Item {
-    constructor(name, cycle) {
+    constructor(name, cycle, description) {
         super(name)
+        this.description = description;
         this.cycle = cycle;
     }
 
@@ -28,6 +29,21 @@ export default class HostingPlan extends Item {
     }
     total = () => {
         return this.getMonthly() * this.getNumMonthsInCycle();
+    }
+    setCycle = (cycle) => {
+        this.cycle = cycle
+    }
+
+    getInvoiceItem = () => {
+        return {name: this.name, price: this.total(), description: this.description}
+    }
+    getDiscountItem = () => {
+        let discountAmount = this.discountedTotal() - this.total();
+        if(discountAmount < 0) {
+            return {name: 'Billing Cycle Discount', price: discountAmount, description: ((this.getDiscountRate()*(-1)+1)*100).toFixed(0) + '% off'}
+        } else {
+            return {name: '', price: 0, description: ''}
+        }
     }
 
     // Helper Functions

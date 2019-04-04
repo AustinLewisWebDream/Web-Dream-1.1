@@ -2,10 +2,7 @@ import React, { Component } from 'react';
 import TransitionContent from '../inquiry-routes/CSSTransition';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-
 import Message from '../notification/message';
-
-import { updateCurrentUser } from '../../actions/authentication';
 import { setRegisterWindow } from '../../actions';
 import isEmpty from '../../validation/is-empty';
 import PopUp from '../popup/popup'
@@ -20,13 +17,9 @@ class GetHosting extends Component {
         this.state = {
             slideNum: 1,
             error: [],
-            hostingPlan: 'Starter',
+            hostingPlan: 'Business',
             billingCycle: 'Annually',
-            promoCode: '',
-            promoCodeMessage: [],
-            promotionObject: null,
-            invoiceItems: [new HostingPlan('Starter', 'Annually')]
-
+            plan: new HostingPlan('Starter', 'Annually', 'Renews Annually')
         }
         this.onSlideTransition = this.onSlideTransition.bind(this);
     }
@@ -90,10 +83,8 @@ class GetHosting extends Component {
         const checkout = (
             <TransitionContent title={'Checkout'}>
                 <CheckoutPage 
-                    invoiceItems={this.state.invoiceItems} 
-                    userID={this.props.userID} 
                     nextSlide={e => this.nextSlide(e)}
-                    billingCycle={this.state.billingCycle}
+                    plan={this.state.plan}
                 />
             </TransitionContent>
         )
@@ -109,7 +100,6 @@ class GetHosting extends Component {
             else {
                 return null;
             }
-            
         }
 
         const slideMap = [
@@ -148,12 +138,11 @@ class GetHosting extends Component {
         this.setState({ slideNum: this.state.slideNum + Number(e.target.value) })
     }
     onTypeSelect = name => {
+        let description = 'Renews ' + this.state.billingCycle;
         this.setState({ 
             hostingPlan: name,
-            invoiceItems: [new HostingPlan(name, this.state.billingCycle)],
-        }, () => {
-            console.log(this.state)
-        })
+            plan: new HostingPlan(name, this.state.billingCycle, description),
+        });
     }
     handleChange = name => event => {
         this.setState({
@@ -167,11 +156,9 @@ class GetHosting extends Component {
 
 function mapStateToProps(state) {
     return {
-        user: state.auth.user,
         userID: state.auth.user.id,
-        paymentMethods: state.auth.user.paymentMethods,
         loginPopup: state.loginPopup
     };
 }
 
-export default connect(mapStateToProps, { setRegisterWindow, updateCurrentUser })(GetHosting);
+export default connect(mapStateToProps, { setRegisterWindow })(GetHosting);

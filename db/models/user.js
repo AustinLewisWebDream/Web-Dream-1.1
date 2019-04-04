@@ -67,6 +67,7 @@ UserSchema.methods.findQuoteByIdAndUpdate = async function findQuoteByIdAndUpdat
     var newQuotes = this.quotes
     for(var i = 0; i < this.quotes.length; i++) {
         if(this.quotes[i]._id == quoteID) {
+            
             newQuotes[i] = newQuote;
             return newQuotes;
         }

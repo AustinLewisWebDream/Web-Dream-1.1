@@ -5,6 +5,7 @@ import { REGISTER_USER } from '../routes';
 import jwt_decode from 'jwt-decode';
 import { setRegisterWindow, setLoginWindow } from './index';
 import { LOGIN } from '../routes';
+import { sign } from 'jsonwebtoken';
 
 export const registerUser = (user) => dispatch => {
     const response = fetch(REGISTER_USER, {
@@ -39,8 +40,9 @@ export const loginUser = (user) => dispatch => {
     axios.post( LOGIN , user)
             .then(res => {
                 console.log(res)
-                const { token } = res.data;
+                const { token, user } = res.data;
                 localStorage.setItem('jwtToken', token);
+                localStorage.setItem('user', token);
                 setAuthToken(token);
                 const decoded = jwt_decode(token);
                 dispatch({
@@ -60,14 +62,15 @@ export const loginUser = (user) => dispatch => {
             });
 }
 
-export const updateCurrentUser = token => dispatch => {
-    localStorage.setItem('jwtToken', token);
-    const decoded = jwt_decode(token);
-    console.log(decoded);
-    dispatch(setCurrentUser(decoded));
+// TODO: Upload this to the local storage
+export const updateCurrentUser = user => dispatch => {
+    const persistentUser = sign(user, 'non-secure');
+    localStorage.setItem('user', persistentUser);
+    dispatch(setCurrentUser(user));
 }
 
 export const setCurrentUser = decoded => dispatch => {
+    console.log(decoded)
     dispatch(
         {
             type: SET_CURRENT_USER,

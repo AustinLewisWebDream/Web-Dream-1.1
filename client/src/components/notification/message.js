@@ -5,13 +5,6 @@ import { resetServerErrors } from '../../actions/authentication'
 import './message.css';
 
 class Message extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-
-        }
-    }
-
     render() {
         var messages = []
         if(this.props.list.length || this.props.errors.length) {
@@ -24,7 +17,21 @@ class Message extends Component {
                 </React.Fragment>
             )
         })
-        console.log(messages)
+
+        if(this.props.errors.length > 0) {
+            return(
+                <React.Fragment>
+                    <div className='center-message'>
+                        <div className='message'>
+                            <div className='bad centered'>
+                                {this.props.errors}
+                            </div>
+                        </div>
+                    </div>
+                </React.Fragment>
+            )
+        }
+
         if(messages.length == 0) {
             return(
                 null

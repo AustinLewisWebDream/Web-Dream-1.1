@@ -9,7 +9,6 @@ import Message from '../notification/message';
 import isEmpty from '../../validation/is-empty';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import Discount from '../../objects/discount';
 import axios from 'axios';
 import { ADD_SUBSCRIPTION, VERIFY_PROMO, GET_USER_PROMO } from '../../routes';
 import { setRegisterWindow } from '../../actions'
@@ -39,11 +38,16 @@ class CheckoutPage extends Component{
         this.state = {
             errors: [],
             promoCode: '',
-            billingCycle: this.props.billingCycle,
-            promotionObject: null,
-            invoiceItems: this.props.invoiceItems,
+            promoObject: {code: '', description: '', rate: 1,},
+            plan: this.props.plan,
+            hostingDiscount: this.props.plan.getDiscountItem,
+            billingCycle: 'Annually',
+            invoiceItems: [],
             usedPromo: false
         }
+        this.getUserPromo = this.getUserPromo.bind(this)
+        this.generateInvoiceItems = this.generateInvoiceItems.bind(this)
+        this.getPromoCodeDiscount = this.getPromoCodeDiscount.bind(this)
     }
     
     render() {
@@ -62,19 +66,18 @@ class CheckoutPage extends Component{
                 <button onClick={e => this.verifyPromo(e)} className='sub-btn'>Add</button>
             </div>
         )
-
         const chooseBillingPeriodOptions = [
             {
                 value: "Monthly",
-                label: 'Monthly - $' + this.state.invoiceItems[0].discountedMonthly().toFixed(2) + ' /m'
+                label: 'Monthly - $' + this.state.plan.discountedMonthly().toFixed(2) + ' /m'
             },
             {
                 value: 'Semi-Annually',
-                label: 'Semi-Annually - $' + (this.state.invoiceItems[0].discountedSemiAnnual() / 6).toFixed(2) + ' /m'
+                label: 'Semi-Annually - $' + (this.state.plan.discountedSemiAnnual() / 6).toFixed(2) + ' /m'
             },
             {
                 value: 'Annually',
-                label: 'Annually - $' + (this.state.invoiceItems[0].discountedAnnual() / 12).toFixed(2) + ' /m'
+                label: 'Annually - $' + (this.state.plan.discountedAnnual() / 12).toFixed(2) + ' /m'
             },
         ]
 
@@ -89,7 +92,7 @@ class CheckoutPage extends Component{
                         onChange={e => this.changeBillingCycle(e)}
                         SelectProps={{
                             MenuProps: {
-                            className: classes.menu,
+                                className: classes.menu,
                             },
                         }}
                             helperText="Choose a billing cycle"
@@ -100,11 +103,7 @@ class CheckoutPage extends Component{
                             </MenuItem>
                         ))}
                     </TextField>
-                    
                     {this.state.usedPromo ? null : promoForm}
-
-                
-
                 <br></br>
                     {!isEmpty(this.state.errors) ? <Message type={'bad'} list={this.state.errors} /> : null }
                 <br></br>
@@ -119,100 +118,89 @@ class CheckoutPage extends Component{
                 </div>
 
                 <div className='checkout-invoice'>
-                    <Invoice items={this.state.invoiceItems}></Invoice>
+                    <Invoice items={this.state.invoiceItems}></Invoice> 
                 </div>
             </div>
         </React.Fragment>
         )
     }
     async componentWillMount() {
-        if(this.state.usedPromo)
-        return;
-    try {
-        const response = await fetch(GET_USER_PROMO, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: await JSON.stringify({
-                id: this.props.id
-            })
-        })
-        const promoCode = await response.json();
-        if(response.status != 200) 
-            return
-        const amountToDiscount = this.state.invoiceItems[0].discountedTotal();
-        const discountItem = new Discount(promoCode.data.code, promoCode.data.rate, amountToDiscount);
-        const newInvoiceItems = this.state.invoiceItems
-        newInvoiceItems.push(discountItem);
         this.setState({
-            promoCode: promoCode.data.code,
-            usedPromo : true,
-            invoiceItems : newInvoiceItems,
-            errors: []
-        }, () => {
-            console.log(this.state.invoiceItems[1].total())
-        })
-    } catch (error) {
-        console.log(error)
+            invoiceItems: this.generateInvoiceItems(this.state)
+        });
+        await this.getUserPromo();
     }
-    }
-
     handleChange = name => event => {
         this.setState({
           [name]: event.target.value,
         });
     };
-    changeBillingCycle = event => {
-        this.setState({
-            billingCycle: event.target.value
-        }, () => {
-            let newInvoiceItems = this.state.invoiceItems;
-            newInvoiceItems[0] = new HostingPlan(this.state.invoiceItems[0].name, event.target.value); 
-            if(newInvoiceItems.length > 1) {
-                this.state.invoiceItems[1].amount = newInvoiceItems[0].discountedTotal()
-            }
-            this.setState({
-                invoiceItems: newInvoiceItems
-            });
-        }
-        )
+    changeBillingCycle = async event => {
+        await this.setState((prevState, props) => {
+            return {billingCycle: event.target.value, plan: new HostingPlan(prevState.plan.name, event.target.value, 'Renews ' + event.target.value)};
+        })
+        await this.setState({
+            invoiceItems: this.generateInvoiceItems(this.state)
+        })
     }
     verifyPromo = async () => {
         if(this.state.usedPromo)
             return;
         try {
-            const response = await fetch(VERIFY_PROMO, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    code: this.state.promoCode
+            const response = await axios.post(VERIFY_PROMO, {code: this.state.promoCode})
+            if(response.data) {
+                this.setState({
+                    usedPromo : true,
+                    promoCode : response.data,
+                    errors: []
                 })
-            })
-            const promoCode = await response.json();
-            if(response.status != 200) 
-                throw promoCode
-            const amountToDiscount = this.state.invoiceItems[0].discountedTotal();
-            const discountItem = new Discount(this.state.promoCode, promoCode.data.rate, amountToDiscount);
-            const newInvoiceItems = this.state.invoiceItems
-            newInvoiceItems.push(discountItem);
-            this.setState({
-                usedPromo : true,
-                invoiceItems : newInvoiceItems,
-                errors: []
-            }, () => {
-                console.log(this.state.invoiceItems[1].total())
-            })
+            }
         } catch (error) {
             this.setState({
                 errors: ['Could not find code or code has expired']
             })
         }
     }
+    async getUserPromo() {
+        if(this.state.usedPromo)
+            return;
+        try {
+            const response = await axios.post(GET_USER_PROMO, {}, {'authorization' : localStorage.getItem('jwtToken')})
+            console.log(response.data.data);
+            await this.setState({
+                promoObject: response.data.data,
+                promoCode: response.data.data.code,
+                usedPromo : true,
+                errors: [],
+                
+            });
+            let newInvoiceItems = this.state.invoiceItems;
+            newInvoiceItems.push(this.getPromoCodeDiscount())
+            await this.setState({
+                invoiceItems: newInvoiceItems
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    generateInvoiceItems(state) {
+        var invoiceItems = [];
+        invoiceItems.push(state.plan.getInvoiceItem());
+        var discountItem = state.plan.getDiscountItem()
+        if(discountItem.price != 0)
+            invoiceItems.push(discountItem)
+        if(state.usedPromo)
+            invoiceItems.push(this.getPromoCodeDiscount());
+        return invoiceItems;
+    }
+
+    getPromoCodeDiscount() {
+        if(this.state.usedPromo) {
+            return {name: this.state.promoObject.code, price: (this.state.promoObject.rate * this.state.plan.discountedTotal())*-1, description: this.state.promoObject.description}
+        }
+        return {name: '', price: 0, description: ''}
+    }
+
     onSubmit = async () => {
         if(isEmpty(this.props.id)) {
             this.props.setRegisterWindow(true);
@@ -220,9 +208,8 @@ class CheckoutPage extends Component{
         }
         try {
             let body = {
-                id: this.props.id,
                 type: 'hosting',
-                name: this.state.invoiceItems[0].name,
+                name: this.state.plan.name,
                 cycle: this.state.billingCycle,
                 promo: this.state.promoCode
             }
@@ -236,19 +223,6 @@ class CheckoutPage extends Component{
         }
     }
 }
-
-function checkErrors(state, user, methods) {
-    return new Promise((resolve, reject) => {
-        var message = [];
-
-        if (message.length === 0) {
-            resolve()
-        }
-        else {
-            reject(message)
-        }
-    })
-} 
 
 CheckoutPage.propTypes = {
     classes: PropTypes.object.isRequired,

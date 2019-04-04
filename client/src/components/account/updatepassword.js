@@ -33,6 +33,7 @@ class UpdatePasswordForm extends Component {
                 <TextField
                     id="standard-name"
                     label="Old Password"
+                    type="password"
                     value={this.state.oldPassword}
                     onChange={this.handleChange('oldPassword')}
                     margin="normal"
@@ -40,6 +41,7 @@ class UpdatePasswordForm extends Component {
                 <TextField
                     id="standard-name"
                     label="New"
+                    type="password"
                     value={this.state.password}
                     onChange={this.handleChange('password')}
                     margin="normal"
@@ -47,15 +49,13 @@ class UpdatePasswordForm extends Component {
                 <TextField
                     id="standard-name"
                     label="Confirm"
+                    type="password"
                     value={this.state.confirmation}
                     onChange={this.handleChange('confirmation')}
                     margin="normal"
                 />
                 <button onClick={e => this.handleSubmit(e)} className='block-btn small'>Update</button>
                 <br></br>
-                
-                
-
             </React.Fragment>
         )
 

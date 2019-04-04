@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from 'react-redux';
 import { RETRIEVE_USERS, AUTHENTICATE_ADMIN } from './routes';
 import { Redirect } from 'react-router-dom';
-import Axios from "axios";
+import axios from "axios";
 
 import './admin.css'
 import AdminRouter from './adminRouter';
@@ -37,14 +37,17 @@ class AdminIndex extends Component {
         }
     }
     async componentWillMount() {
-        if(this.checkIfAdmin()) {
-            this.getAllUsersAndSetState();
+        if(await this.checkIfAdmin()) {
+            let response = await axios.post(RETRIEVE_USERS, {}, {'authorization': localStorage.getItem('jwtToken')});
+            this.setState({
+                users: response.data
+            })
         } else {
             this.setState({ unauthorizedAccess: true })
         }
     }
     async checkIfAdmin() {
-        const response = await fetch(RETRIEVE_USERS, {
+        const response = await fetch(AUTHENTICATE_ADMIN, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -58,26 +61,6 @@ class AdminIndex extends Component {
         let isAdmin = await response.json();
         return isAdmin
     }
-    async getAllUsersAndSetState() {
-        try {
-            const response = await fetch(RETRIEVE_USERS, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'authorization': localStorage.getItem('jwtToken')
-                },
-                body: JSON.stringify({
-                    email: this.props.adminEmail
-                })
-            })
-            let users = await response.json();
-            this.setState({ users })
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
 }
 
 const mapStateToProps = (state) => {

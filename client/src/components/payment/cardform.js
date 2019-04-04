@@ -4,13 +4,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import classes from 'classnames';
 import { connect } from 'react-redux';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import setAuthToken from '../../setAuthToken';
-
 import { ADD_PAYMENT_METHOD, TEST_HEADER_AUTH } from '../../routes';
 import { updateCurrentUser } from '../../actions/authentication';
 import { isValidCardCharacter, isValidCardLength, isBackspaceKey, isValidCVCLength, isValidExpLength } from '../../validation/paymentform';
-
+import Message from '../notification/message'
 import './payment.css'
+import axios from 'axios';
 
 class CardForm extends Component{
     constructor(props) {
@@ -20,6 +19,9 @@ class CardForm extends Component{
             exp: '',
             cvc: '',
             primary: false,
+            notifications: [],
+            error: null,
+            success: null
         }
         this.updateCardNumber = this.updateCardNumber.bind(this);
         this.submitPaymentInfo = this.submitPaymentInfo.bind(this);
@@ -65,7 +67,10 @@ class CardForm extends Component{
                     label='Make Primary Method'
                 />
                 <button className='sub-btn' onClick={this.submitPaymentInfo}>Add</button>
+                
                 </div>
+                <Message list={this.state.notifications} type={this.state.error ? 'bad' : 'good'}></Message>
+
             </React.Fragment>
         )
     }
@@ -120,33 +125,33 @@ class CardForm extends Component{
             const month = this.state.exp.substr(0,2)
             const year = this.state.exp.substr(2, 4)
             const number = this.state.cardNumber.replace(/\s/g, '')
-            const res = await fetch(ADD_PAYMENT_METHOD, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('jwtToken')
-            },
-            body: JSON.stringify({
-                id: this.props.userID,
-                number: number,
+            let body = {
+                number,
                 exp_month: month,
                 exp_year: year,
                 cvc: this.state.cvc,
                 makePrimary: this.state.primary
-            })
-            })
-            const user = await res.json();
-            this.props.updateCurrentUser(user)
+            }
+            let response = await axios.post(ADD_PAYMENT_METHOD, body, {'authorization': localStorage.getItem('jwtToken')})
+            this.props.updateCurrentUser(response.data)
             this.setState({
                 id: this.props.userID,
                 cardNumber: '',
                 exp: '',
                 cvc: '',
-                primary: false
+                error: false,
+                success: true,
+                primary: false,
+                notifications: ['Payment Method Added']
             });
         } catch (error) {
             console.log(error)
+            this.setState({
+                error: true,
+                cvc: '',
+                success: false,
+                notifications: ['Error Adding Payment Method']
+            });
         }
     }
 }

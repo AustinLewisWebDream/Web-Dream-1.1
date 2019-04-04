@@ -1,18 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-
 var User = mongoose.model('users');
 var Sub = require('../db/models/subscriptions')
 var Quote = require('../db/models/quote');
-
 const nodeJobs = require('../lib/NodeCron');
 const PromoCode = require('../db/models/promocodes');
-
 const middleware = require('../lib/middleware');
 
+const verifyAdmin = async (req, res, next) => {
+    try {
+        const account = await User.findById(req.body.id);
+        if(account.email == 'austin@webdreamtech.com')
+            next();
+        else
+            res.status(403);
+    } catch(err) {
+        res.status(500);            
+    }
+}
 
-// TODO: Fix authentication for admin routes
 
 var now = new Date();
 const fakeService = {
@@ -21,13 +28,13 @@ const fakeService = {
     dueDate: new Date(now.getFullYear(), now.getMonth(), now.getDate())
 }
 
-router.post('/promocode/create' , async (req, res) => {
+router.post('/promocode/create', middleware.verify, verifyAdmin, async (req, res) => {
     const newPromo = await PromoCode.create({code: req.body.code, description: req.body.description, rate: req.body.rate, reccuring: Boolean(req.body.reccuring) })
     res.status(200).json({data: newPromo});
 });
 
 
-router.post('/subscription/create', (req, res) => {
+router.post('/subscription/create',  middleware.verify, verifyAdmin, (req, res) => {
     let newSub = new Sub({
         type: req.body.type,
         name: req.body.name,
@@ -42,7 +49,7 @@ router.post('/subscription/create', (req, res) => {
     })
 });
 
-router.post('/genfakeinvoice', async (req, res) => {
+router.post('/genfakeinvoice', middleware.verify, verifyAdmin, async (req, res) => {
     var currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     const newInvoice = {
         invoiceNumber: 12331256131,
@@ -58,7 +65,7 @@ router.post('/genfakeinvoice', async (req, res) => {
     res.json(savedMe);
 });
 
-router.post('/genfakeservices', async (req, res) => {
+router.post('/genfakeservices',  middleware.verify, verifyAdmin, async (req, res) => {
     const me = await User.findOne({email: 'opticsillusion@live.com'});
     const subscription = await Sub.findOne({type: 'hosting'});
 
@@ -82,20 +89,13 @@ router.post('/scheduleJob', (req, res) => {
 
 // START FULLY IMPLEMENTED ROUTES --------------------------
 
-const verifyAdmin = (req, res, next) => {
-    if(req.body.adminEmail != 'opticsillusion@live.com') {
-        return res.status(403);
-    } else {
-        next();
-    }
-}
 
-router.post('/authenticate', middleware.verify, async (req, res) => {
-    return res.status(200).json({isAdmin: true});
+
+router.post('/authenticate', middleware.verify, verifyAdmin, async (req, res) => {
+    return res.status(200).json({data: true});
 })
 
-router.post('/get-users', middleware.verify, async (req, res) => {
-    console.log("This route was hit")
+router.post('/get-users', middleware.verify, verifyAdmin, async (req, res) => {
     try {
         const users = await User.find({});
         return res.status(200).json(users);
@@ -105,9 +105,11 @@ router.post('/get-users', middleware.verify, async (req, res) => {
     }
 })
 
-router.post('/update-customer/quote', async (req, res) => {
+router.post('/update-customer/quote', middleware.verify, verifyAdmin, async (req, res) => {
+    console.log(req.body)
     var customer = await User.findById(req.body.customerID);
-    let newQuotesList = await customer.findQuoteByIdAndUpdate(req.body.id, req.body.updated);
+    var newQuotesList = await customer.findQuoteByIdAndUpdate(req.body.quoteID, req.body.updated);
+    console.log(newQuotesList)
     customer.quotes = newQuotesList;
     customer.markModified('quotes')
     await customer.save();

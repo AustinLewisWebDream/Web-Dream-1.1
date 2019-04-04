@@ -2,7 +2,7 @@ import React from 'react';
 
 const PayInvoiceButton = props => {
     return(
-        <button className='block-btn small'>Pay Now</button>
+        <button onClick={props.payInvoice} className='block-btn small'>Pay Now</button>
     )
 }
 
